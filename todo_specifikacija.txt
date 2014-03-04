@@ -1,0 +1,4 @@
+Spremanje prerade:
+Moram kreirati primku, preradu, artikl, i primku_stavku
+-Da bi spremio preradu, moram imati definirane GRUPE. Grupe definiram u postavkama
+- Postavke nemam definirane

@@ -1,0 +1,290 @@
+<ul class="breadcrumbs">
+    <li><a href="#/{{i18n 'URL_vinarija'}}/">Vinarija</a></li>
+    <li><a href="#/{{i18n 'URL_vinarija'}}/{{i18n 'URL_ulaz'}}/>Ulaz</a></li>
+    <li class="current">Prerada {{id}}</li>
+</ul>
+<div class="row fullWidth">
+<div class="large-8 column">
+<dl class="tabs" data-tab>
+    <dd class="active"><a href="#panel2-1">Zaprimanje</a></dd>
+    <dd><a href="#panel2-2">Izdvajanje</a></dd>
+    <dd><a href="#panel2-3">Muljanje</a></dd>
+    <dd><a href="#panel2-4">Prešanje</a></dd>
+    <dd><a href="#panel2-5">Pretok</a></dd>
+</dl>
+<div class="tabs-content">
+<div class="content active" id="panel2-1">
+    <div class="large-12 column">
+        <form id="zaprimanjeForm" onsubmit="return false;">
+            <div class="row">
+                <div class="large-12 column">
+                    <input type="radio" name="vrsta" value="G" id="grozde" checked="checked"/><label for="grozde">Grožđe</label>
+                    <input type="radio" name="vrsta" value="MO" id="most"/><label for="grozde">Mošt</label>
+                    <input type="radio" name="vrsta" value="MA" id="masulj"/><label for="grozde">Masulj</label>
+                    <input type="radio" name="vrsta" value="V" id="vino"/><label for="grozde">Vino</label>
+                </div>
+
+
+            </div>
+            <div class="row">
+                <div class="large-3 column end">
+                    <label>Datum</label>
+                    <input type="text" id="zaprimanjeDate" name="zaprimanjeDate" value="{{formatDate datum 'short' }}"/>
+                </div>
+                <div class="large-3 column end">
+                    <label>Vrijeme</label>
+                    <input type="text" name="zaprimanjeTime"/>
+                </div>
+
+            </div>
+            <div class="row">
+
+                <div id="partner" data-id="{{primka.partnerId}}" class="large-4 column">
+                    <div class="row collapse">
+                        <label>Partner</label>
+
+                        <div class="large-10 column">
+                            <input type="text" placeholder="" disabled name="zaprimanjePartner"
+                                   value="{{primka.partner.naziv}}"/>
+                        </div>
+                        <div class="large-2 column end">
+                            <a href="#" class="button postfix">&#9776;</a>
+                        </div>
+                    </div>
+                </div>
+                <div id="vinograd" data-id="" class="large-4 column">
+                    <div class="row collapse">
+                        <label>Vinograd</label>
+
+                        <div class="large-10 column">
+                            <input type="text" placeholder="" disabled name="zaprimanjeVinograd"/>
+                        </div>
+                        <div class="large-2 column end">
+                            <a href="#" class="button postfix">&#9776;</a>
+                        </div>
+                    </div>
+                </div>
+                <div id="sorta" data-id="{{sortaId}}" class="large-4 column end">
+                    <div class="row collapse">
+                        <label>Sorta</label>
+
+                        <div class="large-10 column">
+                            <input type="text" placeholder="" disabled name="zaprimanjeSorta" value="{{sortaNaziv}}"/>
+                        </div>
+                        <div class="large-2 column end">
+                            <a href="#" class="button postfix">&#9776;</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="large-4 column">
+                    <label>Berba</label>
+                    <input type="text" name="berba"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="large-12 column">
+                    <label>Napomena</label>
+                    <textarea name="napomena"></textarea>
+                </div>
+            </div>
+            <div class="row bottom">
+                <div class="large-4 column">
+                    <label>Količina (kg)</label>
+                    <input type="text" name="kolicinaNetto" id="zaprimanjeKolicina" value="{{primka.kolicina}}"/>
+                </div>
+                <div class="large-4 column">
+                    <label>Cijena</label>
+                    <input type="text" name="cijena" id="zaprimanjeCijena" value="{{primka.cijena}}"/>
+                </div>
+                <div class="large-4 column">
+                    <label>Iznos</label>
+                    <span id="zaprimanjeIznos" class="iznos">{{primka.iznos}}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="large-4 column">
+                    <label>Broj</label>
+                    <input type="text" name="broj" value="{{broj}}"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="large-7 column">
+                    <button type="submit">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="content" id="panel2-2">
+    <div class="large-12 column">
+        <form id="izdvajanjeForm" onsubmit="return false;">
+            <div class="row">
+                <div class="large-3 column">
+                    <label>Datum</label>
+                    <input type="text" class="date"/>
+                </div>
+                <div class="large-3 column end">
+                    <label>Vrijeme</label>
+                    <input type="text"/>
+                </div>
+
+            </div>
+            <div class="row">
+
+                <div class="large-4 column">
+                    <div class="row collapse">
+                        <label>Posuda</label>
+
+                        <div class="large-10 column">
+                            <input type="text" placeholder=""/>
+                        </div>
+                        <div class="large-2 column end">
+                            <a href="#" class="button postfix">&#9776;</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="large-4 column">
+                    <label>Količina</label>
+                    <input type="text"/>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="large-7 column">
+                    <button type="submit">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="content" id="panel2-3">
+    <div class="large-12 column">
+        <form id="muljanjeForm" onsubmit="return false;">
+            <div class="row">
+                <div class="large-3 column">
+                    <label>Datum</label>
+                    <input type="text" class="date"/>
+                </div>
+                <div class="large-3 column end">
+                    <label>Vrijeme</label>
+                    <input type="text"/>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="large-12 column">
+                    <label>Napomena</label>
+                    <textarea></textarea>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="large-7 column">
+                    <button type="submit">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="content" id="panel2-4">
+    <div class="large-12 column">
+        <form id="presanjeForm" onsubmit="return false;">
+            <div class="row">
+                <div class="large-3 column">
+                    <label>Datum</label>
+                    <input type="text" class="date"/>
+                </div>
+                <div class="large-3 column end">
+                    <label>Vrijeme</label>
+                    <input type="text"/>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="large-12 column">
+                    <label>Napomena</label>
+                    <textarea></textarea>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="large-7 column">
+                    <button type="submit">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="content" id="panel2-5">
+    <div class="large-12 column">
+        <form id="pretokForm" onsubmit="return false;">
+            <div class="row">
+                <div class="large-3 column">
+                    <label>Datum</label>
+                    <input type="text" class="date"/>
+                </div>
+                <div class="large-3 column end">
+                    <label>Vrijeme</label>
+                    <input type="text"/>
+                </div>
+
+            </div>
+            <div class="row">
+
+                <div class="large-4 column">
+                    <div class="row collapse">
+                        <label>Posuda</label>
+
+                        <div class="large-10 column">
+                            <input type="text" placeholder=""/>
+                        </div>
+                        <div class="large-2 column end">
+                            <a href="#" class="button postfix">&#9776;</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="large-4 column">
+                    <label>Količina</label>
+                    <input type="text"/>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="large-7 column">
+                    <button type="submit">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+</div>
+<div class="large-4 column">
+    <div class="row">
+        <div class="large-12 column input-panel" id="summary">
+
+
+        </div>
+    </div>
+
+</div>
+</div>
+<div id="modal" class="reveal-modal" data-reveal>
+    <h2 id="modalTitle">Awesome. I have it.</h2>
+
+    <div id="modalContent">
+        <p class="lead">Your couch. It is mine.</p>
+
+        <p>Im a cool paragraph that lives inside of an even cooler modal. Wins</p>
+    </div>
+    <a class="close-reveal-modal">&#215;</a>
+</div>
+

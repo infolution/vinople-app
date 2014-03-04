@@ -1,0 +1,21 @@
+<ul class="breadcrumbs">
+  <li><a href="#/{{i18n 'URL_vinarija'}}/">Vinarija</a></li>
+  <li class="current">{{vrsta}}</li>
+</ul>
+<div class="row fullWidth">
+    <div class="small-3 column"><input type="text" placeholder="{{LBL_search}}" /></div>
+    <div class="small-1 columns">
+        <a href="#" class="button postfix"><img src="/images/search_icon.png" alt="search-btn"/></a>
+    </div>
+    <div class="small-4 column end"><a href="#" data-dropdown="drop" class="button dropdown small filter">Filter</a><br>
+        <ul id="drop" data-dropdown-content class="f-dropdown">
+            <li><a href="#">This is a link</a></li>
+            <li><a href="#">This is another</a></li>
+            <li><a href="#">Yet another</a></li>
+        </ul></div>
+</div>
+<div id="container" class="row fullWidth">
+    <div class="large-12 column">
+        {{> sortaView}}
+    </div>
+</div>

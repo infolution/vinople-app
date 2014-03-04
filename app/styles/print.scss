@@ -1,0 +1,14 @@
+body {
+  color : #000000;
+  background : #ffffff;
+  font-family : "Helvetic Neue", Helvetica, Arial;
+  font-size : 12pt;
+  -webkit-print-color-adjust:exact;
+}
+a {
+  text-decoration : underline;
+  color : #0000ff;
+}
+#header, #footer, .breadcrumbs {
+  display : none;
+}

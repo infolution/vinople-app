@@ -1,0 +1,106 @@
+<ul class="breadcrumbs"> 
+    <li class="current">{{LBL_postavke}}</li>
+</ul>
+<dl class="tabs" data-tab>
+    <dd class="active"><a href="#panel2-1">{{i18n 'LBL_general'}}</a></dd>
+    <dd><a href="#panel2-2">{{i18n 'LBL_grupe'}}</a></dd>
+    <dd><a href="#panel2-3">{{i18n 'LBL_parametri_analiza'}}</a></dd>
+    <dd><a href="#panel2-4">{{i18n 'LBL_propisi'}}</a></dd>
+    <dd><a href="#panel2-4">{{i18n 'LBL_account'}}</a></dd>
+</dl>
+<div class="tabs-content">
+    <div class="content active" id="panel2-1">
+        <div class="row fullWidth">
+            <div class="small-12 column">
+                <a href="#" class="button dropdown" data-dropdown="drop1">{{i18n 'LBL_language'}}</a>
+                <ul id="drop1" class="f-dropdown" data-dropdown-content>
+                    <li><a href="#" onclick="return false;" data-lang="" class="lang">{{i18n 'LBL_lang_en'}}</a></li>
+                    <li><a href="#" onclick="return false;" data-lang="hr" class="lang">{{i18n 'LBL_lang_hr'}}</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="content" id="panel2-2">
+        <div class="row fullWidth">
+            <div class="large-6 column">
+                <div id="groupTree"></div>
+            </div>
+            <div class="large-6 column">
+                <div class="row">
+                    <div class="large-4 column">
+                    <label>{{i18n 'LBL_odabrana_grupa'}}</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="large-4 column">
+                        <input id="odabranaGrupaTF" type="text" placeholder="{{i18n 'LBL_naziv'}}" />
+                    </div>
+                    <div class="large-2 column">
+                        <input id="odabranaGrupaContainerCB" type="checkbox" ><label for="containerCB">{{i18n 'LBL_container'}}</label>
+                    </div>
+                    <div class="large-2 column">
+                        <button class="small" id="spremiGrupaBtn">{{i18n 'LBL_spremi'}}</button>
+                    </div>
+                    <div class="large-2 column end">
+                        <button class="small alert" id="obrisiGrupaBtn">{{i18n 'LBL_obrisi'}}</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="large-4 column large-offset-1">
+                    <label>{{i18n 'LBL_podgrupa'}}</label>
+                    </div>
+                </div>
+                 <div class="row">
+                    <div class="large-3 large-offset-1 column">
+                        <input type="text" placeholder="{{i18n 'LBL_naziv'}}" />
+                    </div>
+                    <div class="large-2 column">
+                        <input id="containerCB" type="checkbox" ><label for="containerCB">{{i18n 'LBL_container'}}</label>
+                    </div>
+                    <div class="large-2 column end">
+                        <button class="small" id="dodajPodgrupaBtn">{{i18n 'LBL_dodaj'}}</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="large-6 column">
+                        <a href="#" class="button small" id="grupaGrozdeBtn">{{i18n 'LBL_grupa_grozde'}}</a>
+                        <span id="grupaGrozde">{{grupaGrozde}}</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="large-6 column">
+                        <a href="#" class="button small" id="grupaMasuljBtn">{{i18n 'LBL_grupa_masulj'}}</a>
+                        <span id="grupaMasulj">{{grupaMasulj}}</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="large-6 column">
+                        <a href="#" class="button small" id="grupaMostBtn">{{i18n 'LBL_grupa_most'}}</a>
+                        <span id="grupaMost">{{grupaMost}}</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="large-6 column">
+                        <a href="#" class="button small" id="grupaVinoBtn">{{i18n 'LBL_grupa_vino'}}</a>
+                        <span id="grupaVino">{{grupaVino}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content" id="panel2-3">
+        <p>Third panel content goes here...</p>
+    </div>
+    <div class="content" id="panel2-4">
+        <div class="row fullWidth">
+            <div class="large-6 column">
+                <a href="#" class="button" id="loadSampleDataBtn">{{i18n 'LBL_load_sampledata'}}</a>
+            </div>
+        </div>
+        <div class="row fullWidth">
+            <div class="large-6 column">
+                <a href="#" class="button" id="deleteLocalDbBtn">{{i18n 'LBL_delete_local_db'}}</a>
+            </div>
+        </div>
+    </div>
+</div>

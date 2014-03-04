@@ -1,0 +1,10 @@
+{
+  "name": "vinople-yeoman",
+  "private": true,
+  "dependencies": {
+    "modernizr": "~2.6.2",
+    "jquery": "~1.10.2",
+    "socket.io-client": "~0.9.16"
+  },
+  "devDependencies": {}
+}

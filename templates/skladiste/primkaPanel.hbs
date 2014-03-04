@@ -1,0 +1,120 @@
+<ul class="breadcrumbs">
+    <li><a href="#/{{i18n 'URL_skladiste'}}/">{{i18n 'LBL_skladiste'}}</a></li>
+    <li class="current">{{i18n 'LBL_primka'}}</li>
+    <li class="separator"></li>
+    <li class="menu-item"><a href="#" data-id="" id="saveBtn">{{i18n 'LBL_spremi'}}</a></li>
+    <li class="menu-item"><a href="#" data-id="" id="cancelBtn">{{i18n 'LBL_odustani'}}</a></li>
+    <li class="separator"></li>
+    <li class="menu-item"><a href="#" id="deleteBtn">{{i18n 'LBL_obrisi'}}</a></li>
+</ul>
+<form id="primkaForm" onsubmit="return false;">
+    <div class="row fullWidth">
+
+        <div class="large-2 column">
+
+            <label>Datum</label>
+            <input type="text" id="datum" name="datum" value="{{formatDate datum 'short' }}"/>
+
+        </div>
+        <div id="partner" class="large-3 column end">
+            <div class="row collapse">
+                <label>Partner</label>
+
+                <div class="large-10 column">
+                    <input type="text" placeholder="" disabled name="partner"
+                           value="{{partner.naziv}}"/>
+                </div>
+                <div class="large-2 column end">
+                    <a href="#" class="button postfix">&#9776;</a>
+                </div>
+            </div>
+        </div>
+        <div class="large-2 column">
+
+            <label>{{i18n 'LBL_brojracuna'}}</label>
+            <input type="text" id="brRacuna" name="brRacuna" value="{{brRacuna }}"/>
+
+        </div>
+        <div class="large-2 column end">
+
+            <label>{{i18n 'LBL_total'}}</label>
+            <span id="primkaIznos" class="iznos">0</span>
+
+        </div>
+
+    </div>
+    <div class="row fullWidth">
+        <div class="large-5 column">
+            <label>{{i18n 'LBL_napomena'}}</label>
+            <textarea id="napomena"></textarea>
+        </div>
+    </div>
+</form>
+<form id="stavkaForm">
+
+    <div class="row fullWidth artikl-selector">
+        <div class="large-5 column">
+            <div class="row">
+                <div class="large-2 column">
+                    <h4>{{i18n 'LBL_artikli'}}</h4>
+                </div>
+                <div class="large-10 column end">
+                <div id="artiklSearch"></div>
+                </div>
+            </div>
+            <div id="artiklTable"></div>
+        </div>
+        <div class="large-5 column end">
+            <div class="row">
+                <div class="large-12 column">
+                <h5 id="artikl" data-id="">{{i18n 'LBL_odabraniartikl'}}</h5>
+                </div>
+            </div>
+            <div class="row">
+            <label>{{i18n 'LBL_jmstavke'}}</label>
+            <input type="radio" name="jmStavka" value="{{i18n 'LBL_komada_short'}}"
+                   id="unit{{i18n 'LBL_komada_short'}}" checked="checked"><label
+                for="unit{{i18n 'LBL_komada_short'}}">{{i18n 'LBL_komada_short'}}</label>
+            <input type="radio" name="jmStavka" value="kg" id="unitkg"><label for="unitkg">kg</label>
+            <input type="radio" name="jmStavka" value="g" id="unitg"><label for="unitg">g</label>
+            <input type="radio" name="jmStavka" value="L" id="unitL"><label for="unitL">L</label>
+            <input type="radio" name="jmStavka" value="ml" id="unitml"><label for="unitml">ml</label>
+            </div>
+            <div class="row">
+                <label for="kolicina">{{i18n 'LBL_kolicina'}}</label>
+                <input type="text" id="kolicina" name="kolicina"/>
+            </div>
+            <div class="row">
+                <label for="cijena">{{i18n 'LBL_cijena'}}</label>
+                <input type="text" id="cijena" name="cijena"/>
+            </div>
+            <div class="row">
+                <label for="stavkaIznos">{{i18n 'LBL_iznos'}}</label>
+                <span id="stavkaIznos" class="iznos">0</span>
+            </div>
+            <div class="row">
+                <button type="submit">{{i18n 'LBL_dodaj'}}</button>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="row fullWidth">
+    <div class="large-5 column">
+        <h4>Stavke</h4>
+    </div>
+</div>
+<div class="row fullWidth">
+    <div class="large-12 column">
+        <div id="stavkeTable"></div>
+    </div>
+</div>
+<div id="modal" class="reveal-modal" data-reveal>
+    <h2 id="modalTitle">Awesome. I have it.</h2>
+
+    <div id="modalContent">
+        <p class="lead">Your couch. It is mine.</p>
+
+        <p>Im a cool paragraph that lives inside of an even cooler modal. Wins</p>
+    </div>
+    <a class="close-reveal-modal">&#215;</a>
+</div>

@@ -1,0 +1,22 @@
+{{#each items}}
+<div class="vinograd-widget">
+<div class="row">
+    <div class="widget-row">
+        <div class="large-4 column"><h3>{{naziv}}</h3></div>
+        <div class="large-1 column"><a href="#" >{{i18n 'LBL_uredi'}}</a></div>
+    </div>
+    <div class="row"></div>
+    <div class="widget-row">
+        <div class="large-4 column"><h5>{{i18n 'LBL_sekcije'}}</h5></div>
+    </div>
+    <div class="widget-row">
+        <div class="large-12 column">
+            {{#each sekcije}}
+            <div class="left"><span class="value">{{naziv}}</span></div>
+            {{/each}}
+
+        </div>
+    </div>
+</div>
+    </div>
+{{/each}}

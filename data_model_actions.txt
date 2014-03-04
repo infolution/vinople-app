@@ -1,0 +1,9 @@
+Spremanje prerade
+------------------
+
+1. Spremiti primku
+2. Pronaći kojoj grupi pripada
+
+3. Pronaći taj artikl
+Artikl tražim po nazivu i grupi
+

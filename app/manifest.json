@@ -1,0 +1,19 @@
+{
+  "name": "Vinople",
+  "description": "Application for winery management",
+  "version": "0.1",
+  "app": {
+    "background": {
+      "scripts": ["background.js"]
+    }
+  },
+  "manifest_version": 2,
+  "sandbox": {
+  "pages": ["index.html"]
+},
+  "icons": { "32": "vinople_icon32.png", "48": "vinople_icon48.png" },
+  "permissions": [
+    "unlimitedStorage",
+    "notifications"
+  ]
+}

@@ -1,0 +1,106 @@
+<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Vinople</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+        <!-- build:css styles/vendor.css -->
+        <!-- bower:css -->
+        <link rel="stylesheet" href="bower_components/pikaday/css/pikaday.css" type="text/css" media="screen">
+        <link rel="stylesheet" href="bower_components/backgrid/lib/backgrid.min.css" type="text/css" media="screen">
+        <link rel="stylesheet" href="bower_components/backgrid-filter/backgrid-filter.min.css" type="text/css" media="screen">
+        <link rel="stylesheet" href="bower_components/backgrid-select-all/backgrid-select-all.min.css" type="text/css" media="screen">
+        <link rel="stylesheet" href="bower_components/jstree/dist/themes/default/style.min.css" />
+        <!-- endbower -->
+        <!-- endbuild -->
+        <!-- build:css(.tmp) styles/main.css -->
+        <link rel="stylesheet" href="styles/main.css" type="text/css" media="screen">
+        <link rel="stylesheet" href="styles/print.css" type="text/css" media="print">
+        <!-- endbuild -->
+        <script src="bower_components/modernizr/modernizr.js"></script>
+
+    </head>
+    <body>
+        <!--[if lt IE 10]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        <div id="root">
+            <div id="header"></div>
+            <div id="container"></div>
+            <div id="root_footer">
+
+            </div>
+        </div>
+        <div id="footer"></div>
+
+        <!-- build:js scripts/vendor.js -->
+        <!-- bower:js -->
+        <script src="bower_components/jquery/jquery.min.js"></script>
+        <script src="bower_components/foundation/js/foundation.min.js"></script>
+        <script src="bower_components/lodash/dist/lodash.underscore.min.js"></script>
+        <script src="bower_components/backbone/backbone-min.js"></script>
+        <script src="bower_components/backbone.wreqr/lib/backbone.wreqr.min.js"></script>
+        <script src="bower_components/backbone.babysitter/lib/backbone.babysitter.min.js"></script>
+        <script src="bower_components/backbone.marionette/lib/backbone.marionette.min.js"></script>
+        <script src="bower_components/handlebars/handlebars.runtime.min.js"></script>
+        <script src="bower_components/node-uuid/uuid.js"></script>
+        <script src="bower_components/momentjs/moment.js"></script>
+        <script src="bower_components/momentjs/lang/hr.js"></script>
+        <script src="bower_components/pikaday/pikaday.js"></script>
+        <script src="bower_components/backgrid/lib/backgrid.min.js"></script>
+        <script src="bower_components/backgrid-filter/backgrid-filter.min.js"></script>
+        <script src="bower_components/backgrid-select-all/backgrid-select-all.min.js"></script>
+        <script src="scripts/vendor/jquery.serializeObject.min.js"></script>
+        <script src="bower_components/jstree/dist/jstree.js"></script>
+        <script src="bower_components/d3/d3.min.js"></script>
+        <script src="bower_components/socket.io-client/dist/socket.io.min.js"></script>
+        <script src="bower_components/async/lib/async.js"></script>
+        <script src="bower_components/q/q.js"></script>
+        <!-- endbower -->
+        <!-- endbuild -->
+
+        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
+        <!--        <script>
+                    (function(b, o, i, l, e, r) {
+                        b.GoogleAnalyticsObject = l;
+                        b[l] || (b[l] =
+                                function() {
+                                    (b[l].q = b[l].q || []).push(arguments)
+                                });
+                        b[l].l = +new Date;
+                        e = o.createElement(i);
+                        r = o.getElementsByTagName(i)[0];
+                        e.src = '//www.google-analytics.com/analytics.js';
+                        r.parentNode.insertBefore(e, r)
+                    }(window, document, 'script', 'ga'));
+                    ga('create', 'UA-XXXXX-X');
+                    ga('send', 'pageview');
+                </script>-->
+
+        <!-- build:js({app,.tmp}) scripts/main.js -->
+        <script src="scripts/templates.js"></script>
+        <script src="scripts/lang.js"></script>
+        <script src="scripts/lang_hr.js"></script>
+        <script src="scripts/util/util.js"></script>
+        <script src="scripts/controls/controls.js"></script>
+        <script src="scripts/dao/dao.js"></script>
+        <script src="scripts/core/core.js"></script>
+        <script src="scripts/postavke/postavke.js"></script>
+        <script src="scripts/skladiste/skladiste.js"></script>
+        <script src="scripts/tvrtka/tvrtka.js"></script>
+        <script src="scripts/start/start.js"></script>
+        <script src="scripts/vinarija/vinarija.js"></script>
+        <script src="scripts/vinogradi/vinogradi.js"></script>
+        <script src="scripts/reports/reports.js"></script>
+         <script src="scripts/backbone-indexeddb.js"></script>
+         <script src="scripts/sampledata.js"></script>
+        <script src="scripts/main.js"></script>
+        <!-- endbuild -->
+    </body>
+</html>

@@ -1,0 +1,48 @@
+<ul class="breadcrumbs">
+    <li><a href="#/{{i18n 'URL_vinograd'}}/">{{i18n 'LBL_vinograd'}}</a></li>
+    <li class="current">{{i18n 'LBL_sorte'}}</li>
+    <li class="separator"></li>
+    <li class="menu-item"><a href="#" id="newBtn">{{LBL_novi}}</a></li>
+    <li class="menu-item"><a href="#" id="deleteBtn">{{LBL_obrisi}}</a></li>
+</ul>
+<div class="row fullWidth">
+    <div class="large-3 column input-panel">
+        <form id="saveForm" onsubmit="return false;">
+            <div class="row">
+                <div class="large-10 column">
+                    <input type="text" placeholder="{{i18n 'LBL_naziv'}}" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="large-10 column">
+                    <input type="radio" name="color" value="B" id="colorWhite"  checked="checked"><label for="colorWhite">{{i18n 'LBL_bijelo'}}</label>
+                    <input type="radio" name="color" value="R" id="colorRed"><label for="colorRed">{{i18n 'LBL_crno'}}</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="large-10 column">
+                    <input type="checkbox" id="varietyActive" checked="checked"><label for="varietyActive">{{i18n 'LBL_active'}}</label>
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="large-7 column">
+                    <button type="submit">{{i18n 'LBL_spremi'}}</button>
+                </div>
+            </div>
+        </form>
+        <div class="push"></div>
+    </div>
+    <div class="large-9 column">
+        <div class="row collapse">
+            <div class="small-11 column"><input type="text" placeholder="{{i18n 'LBL_search'}}" /></div>
+            <div class="small-1 column">
+                <a href="#" class="button postfix"><img src="/images/search_icon.png" alt="search-btn"/></a>
+            </div>
+        </div>
+
+        <div class="row" id="table">
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,25 @@
+{{#each items}}
+<div class="vinograd-widget">
+    <div class="row">
+        <div class="widget-row">
+            <div class="large-4 column"><h3>{{polozaj}}</h3></div>
+            <div class="large-2 column"><div class="titledLabel clear"><span class="value">{{nf povrsina  "" }}</span><span class="title">{{jedinica}}</span></div></div>
+            <div class="large-2 column"><div class="titledLabel clear"><span class="value">{{arkod}}</span><span class="title">{{i18n 'LBL_arkod'}}</span></div></div>
+            <div class="large-3 column"><h4>{{partner.naziv}}</h4></div>
+            <div class="large-1 column"><a href="#" >{{i18n 'LBL_uredi'}}</a></div>
+        </div>
+        <div class="row"></div>
+        <div class="widget-row">
+            <div class="large-4 column"><h5>{{i18n 'LBL_sorte'}}</h5></div>
+        </div>
+        <div class="row"></div>
+        <div class="widget-row">
+            <div class="large-12 column">
+                {{#each sorte}}
+                <div class="titledLabel clear left"><span class="value">{{sorta.naziv}}</span><span class="title">{{komada}} {{../LBL_komada_short}}</span></div>
+                {{/each}}
+            </div>
+        </div>
+    </div>
+</div>
+{{/each}}
