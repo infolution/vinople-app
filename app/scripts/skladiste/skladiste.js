@@ -1,36 +1,36 @@
 V.Skladiste = Marionette.ItemView.extend({
     template: window.JST['/skladiste/skladisteView.hbs'],
-    
+
     //Fade effect
-     onRender: function() {
+    onRender: function () {
         this.$el.hide();
         _.defer(_.bind(this.transitionIn_, this));
     },
-    transitionIn_: function() {
+    transitionIn_: function () {
         this.$el.fadeIn();
     },
-    remove: function() {
-        var parent_remove = _.bind(function() {
+    remove: function () {
+        var parent_remove = _.bind(function () {
             Backbone.View.prototype.remove.call(this);
         }, this);
 
         // Calls parent's `view` method after animation completes
         this.$el.fadeOut(400, parent_remove);
     }
-     //Fade effect - END
+    //Fade effect - END
 });
 V.Enosredstva = Marionette.ItemView.extend({
     template: window.JST['/skladiste/enosredstva.hbs'],
     events: {
         'click #noviBtn': 'viewPrimkaPanel'
     },
-    initialize: function() {
+    initialize: function () {
         this.enosredstva = new V.ArtiklList();
         var self = this;
         var filtered = new V.ArtiklList();
-        this.enosredstva.enoloskaSredstva(filtered, function(lista) {
+        this.enosredstva.enoloskaSredstva(filtered, true).then(function (lista) {
             self.render();
-        }, true);
+        });
         this.table = new Backgrid.Grid({
             columns: [
                 {name: 'sifra', label: "Šifra", cell: 'string'},
@@ -40,7 +40,7 @@ V.Enosredstva = Marionette.ItemView.extend({
             collection: filtered
         });
     },
-    onRender: function() {
+    onRender: function () {
         this.$el.hide();
         _.defer(_.bind(this.transitionIn_, this));
 
@@ -58,13 +58,13 @@ V.Enosredstva = Marionette.ItemView.extend({
 });
 V.Repromaterijal = Marionette.ItemView.extend({
     template: window.JST['/skladiste/gotovaroba.hbs'],
-    initialize: function() {
+    initialize: function () {
         this.repromaterijal = new V.ArtiklList();
         var self = this;
         var filtered = new V.ArtiklList();
-        this.repromaterijal.repromaterijal(filtered, function(lista) {
+        this.repromaterijal.repromaterijal(filtered, true).then(function (lista) {
             self.render();
-        }, true);
+        });
         this.table = new Backgrid.Grid({
             columns: [
                 {name: 'sifra', label: "Šifra", cell: 'string'},
@@ -74,7 +74,7 @@ V.Repromaterijal = Marionette.ItemView.extend({
             collection: filtered
         });
     },
-    onRender: function() {
+    onRender: function () {
         this.$el.hide();
         _.defer(_.bind(this.transitionIn_, this));
 
@@ -86,13 +86,13 @@ V.Repromaterijal = Marionette.ItemView.extend({
 });
 V.GotovaRoba = Marionette.ItemView.extend({
     template: window.JST['/skladiste/gotovaroba.hbs'],
-    initialize: function() {
+    initialize: function () {
         this.gotovaroba = new V.ArtiklList();
         var self = this;
         var filtered = new V.ArtiklList();
-        this.gotovaroba.gotoviProizvod(filtered, function(lista) {
+        this.gotovaroba.gotoviProizvod(filtered, true).then(function (lista) {
             self.render();
-        }, true);
+        });
         this.table = new Backgrid.Grid({
             columns: [
                 {name: 'naziv', label: "Naziv", cell: 'string'},
@@ -101,7 +101,7 @@ V.GotovaRoba = Marionette.ItemView.extend({
             collection: filtered
         });
     },
-    onRender: function() {
+    onRender: function () {
         this.$el.hide();
         _.defer(_.bind(this.transitionIn_, this));
 
@@ -113,25 +113,25 @@ V.GotovaRoba = Marionette.ItemView.extend({
 });
 V.Katalog = Marionette.ItemView.extend({
     template: window.JST['/skladiste/katalog.hbs'],
-    initialize: function() {
+    initialize: function () {
         this.katalog = new V.ArtiklList();
         var self = this;
         var gotovaroba = new V.ArtiklList();
-        this.katalog.gotoviProizvod(gotovaroba, function(lista) {
-            self.render();
-        }, true);
         var repromaterijal = new V.ArtiklList();
-        this.katalog.repromaterijal(repromaterijal, function(lista) {
-            self.render();
-        }, true);
         var enosredstva = new V.ArtiklList();
-        this.katalog.enoloskaSredstva(enosredstva, function(lista) {
-            self.render();
-        }, true);
         var sirovina = new V.ArtiklList();
-        this.katalog.sirovina(sirovina, function(lista) {
-            self.render();
-        }, true);
+        this.katalog.gotoviProizvod(gotovaroba, true)
+            .then(function (lista) {
+                return self.katalog.repromaterijal(repromaterijal, true);
+            }).then(function (lista) {
+                return self.katalog.enoloskaSredstva(enosredstva, true);
+            }).then(function (lista) {
+                return self.katalog.sirovina(sirovina, true);
+            }).then(function (lista) {
+                self.render();
+            });
+
+
         this.gotovaRobaTable = new Backgrid.Grid({
             columns: [
                 {name: 'sifra', label: "Šifra", cell: 'string'},
@@ -165,7 +165,7 @@ V.Katalog = Marionette.ItemView.extend({
             collection: sirovina
         });
     },
-    onRender: function() {
+    onRender: function () {
         this.$el.hide();
         _.defer(_.bind(this.transitionIn_, this));
 
@@ -176,49 +176,35 @@ V.Katalog = Marionette.ItemView.extend({
         this.$("#sirovinaTable").append(this.sirovinaTable.render().el);
         Foundation.init();
     },
-    onShow: function() {
+    onShow: function () {
         Foundation.init();
     }
 
 });
 V.PrimkaPanel = Marionette.ItemView.extend({
     template: window.JST['/skladiste/primkaPanel.hbs'],
-    events : {
+    events: {
         'click #partner .button': 'choosePartner',
         'change #kolicina': 'calculateCijena',
         'change #cijena': 'calculateCijena',
         'submit #stavkaForm': 'addStavka',
         'click #deleteBtn': 'deleteStavka'
     },
-    initialize: function() {
+    initialize: function () {
         var self = this;
         V.App.vent.on("partner:selected", function (data) {
             $('#modal').foundation('reveal', 'close');
-            $('#partner input').val(data.get('naziv') || '');
-            $('#partner').data('id', data.get('id'));
+            $('#partner input').val(data.naziv || '');
+            $('#partner').data('id', data.id);
         });
-        var artiklList = new V.ArtiklList();
-        var filtered =  this.artiklList = new V.ArtiklList();
-        artiklList.repromaterijal(filtered, function(lista) {
-//            self.render();
-        }, true);
-        this.artiklTable = new Backgrid.Grid({
-            columns: [
-                {name: 'id', label: "", cell: 'select-row', editable: false, headerCell: 'select-all'},
-                {name: 'naziv', label: "Naziv", cell: 'string', editable: false},
-                {name: 'proizvodac', label: "Proizvođač", cell: 'string', editable: false}
-            ],
-            collection: filtered
-        });
-        this.artiklTable.collection.on("backgrid:selected", function(e){
-            self.$('#artikl').html(e.get("naziv"));
-            self.$('#artikl').data('id',e.get("id"));
 
-        });
-       this.artiklFilter = new Backgrid.Extension.ClientSideFilter({
-            collection: filtered,
-            fields: ['naziv','proizvodac']
-        });
+
+//        this.artiklTable.collection.on("backgrid:selected", function(e){
+//            self.$('#artikl').html(e.get("naziv"));
+//            self.$('#artikl').data('id',e.get("id"));
+//
+//        });
+
         this.stavke = new V.StavkaList();
         this.stavkeTable = new Backgrid.Grid({
             columns: [
@@ -241,16 +227,62 @@ V.PrimkaPanel = Marionette.ItemView.extend({
             format: 'DD.MM.YYYY'
         });
         picker.setDate(new Date());
-
-        var render = this.artiklTable.render().el;
-        this.$("#artiklTable").append(render);
-        this.$("#artiklSearch").html(this.artiklFilter.render().el);
-
+        var self = this;
+        var artiklList = new V.ArtiklList();
+        var filtered = new V.ArtiklList();
+        artiklList.repromaterijal(filtered, function (lista) {
+            self.d3(filtered.toJSON());
+        }, true);
         this.$("#stavkeTable").html(this.stavkeTable.render().el);
 
         this.$el.hide();
         _.defer(_.bind(this.transitionIn_, this));
 
+    },
+    d3: function (items) {
+        var sorted = this.sorted = items.sort(function (a, b) {
+            return a.naziv <= b.naziv ? -1 : 1;
+        });
+        var ul = this.ul = d3.select(this.el).select("#selector-items").append("ul").attr("class", "artikli");
+        ul.selectAll("li").data(sorted)
+            .enter().append("li")
+            .attr("data-id", function (d) {
+                return d.id
+            })
+            .html(function (d) {
+                return d.naziv
+            });
+
+    },
+    filter: function (e) {
+        var query = e.currentTarget.value.toLowerCase();
+        var filtered = this.sorted.filter(function (d) {
+            if (d.naziv.toLowerCase().indexOf(query) > -1) {
+                return true;
+            }
+        });
+        var li = this.ul.selectAll("li").data(filtered)
+            .attr("data-id", function (d) {
+                return d.id
+            })
+            .html(function (d) {
+                return d.naziv
+            });
+        li.enter().append("li")
+            .attr("data-id", function (d) {
+                return d.id
+            })
+            .html(function (d) {
+                return d.naziv
+            });
+        li.exit()
+            .attr("data-id", function (d) {
+                return d.id
+            })
+            .html(function (d) {
+                return d.naziv
+            })
+            .remove();
     },
     choosePartner: function (e) {
 
@@ -270,7 +302,7 @@ V.PrimkaPanel = Marionette.ItemView.extend({
     addStavka: function (e) {
         var data = $(e.currentTarget).serializeObject();
         data.artiklId = $('#artikl').data('id');
-        data.artikl = this.artiklList.get( data.artiklId).toJSON();
+        data.artikl = this.artiklList.get(data.artiklId).toJSON();
         data.naziv = data.artikl.naziv;
         data.proizvodac = data.artikl.proizvodac;
         data.sifra = data.artikl.sifra;
@@ -280,7 +312,7 @@ V.PrimkaPanel = Marionette.ItemView.extend({
         this.stavke.add(stavka);
         e.preventDefault();
     },
-    deleteStavka: function(e) {
+    deleteStavka: function (e) {
         var selectedModels = this.stavkeTable.getSelectedModels();
         var model = selectedModels || null;
         this.stavke.remove(model);

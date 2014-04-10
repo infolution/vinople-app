@@ -48,6 +48,10 @@ transition: all 200ms ease-out;}
 box-shadow: 0 0 6px 1px rgba(0, 140, 186, 0.5);
 }
 .prerada-control .bottom {position: absolute; bottom: 0; padding: 0 15px;}
+.prerada-control .box {fill: #fff;  }
+.prerada-control .subtitle {font-size: 0.8em;}
+.prerada-control .title {font-size: 1em;}
+
 .posuda-control {max-width: 200px; max-height: 250px; min-height: 250px; min-width: 200px; padding: 5px; overflow: hidden; margin: 5px 5px;
 border: solid 4px white;
      background: -webkit-linear-gradient(#E3E3E3, #D4D4D4); /* Safari */
@@ -75,6 +79,7 @@ box-shadow: 0 0 6px 1px rgba(0, 140, 186, 0.5);
 .posuda-control .white {background-color: #FFFF00; fill: #FFFF00;}
 .posuda-control .red {background-color: #640C19; fill: #640C19;}
 .posuda-control .box { fill:#fff; stroke: #333;stroke-width: 0.2;}
+.sorta-title {font-weight: bold; font-size: 1.8em;}
 .uptitle {font-size: 0.8em;}
 .bold {font-weight: bold;}
 .crono > div >h5 {text-align: center;}
@@ -95,10 +100,12 @@ box-shadow: 0 0 6px 1px rgba(0, 140, 186, 0.5);
 #table table {width: 100%;}
 #table tr.myhilite td {background-color: #C0F260;}
 .vinograd-widget {background-color: #C0F260; padding: 5px; width: 100%; margin: 30px 0; }
+.vinograd-widget .box {fill: #C0F260;}
+.vinograd-widget .polozaj {font-size: 1.5em;}
 .widget-container > div > div {margin: 20px 0; }
 #back-canvas {float: left;  cursor: hand; cursor: pointer;}
 #server {background: #640c19; color: white; height:54px; vertical-align: middle; width: 55px; overflow: hidden; font-size: 0.8em; text-align: center;}
-#server span {height: 54px; width: 100%; vertical-align: middle; margin: auto 0; text-transform: uppercase;}
+#server span {height: 54px; width: 100%; vertical-align: middle; margin: auto 0; text-transform: uppercase; }
 .tabs-content > .content.active {width: 100%;}
 
 .pika-single {width: 440px;}
@@ -114,6 +121,12 @@ div#artiklTable {height:300px; display:block; overflow: auto;}
 div#stavkeTable {height:400px; display:block; overflow: auto;}
 
 .artikl-selector {background-color: #fff; padding: 20px 0;}
+
+#modal {max-height: 600px; min-height: 600px;}
+#selector-items { overflow: auto; }
+#selector-items ul {list-style-type: none;}
+#selector-items ul li {padding: 5px; border-bottom: solid 1px #b3b3b3;}
+#selector-items ul li:hover {background-color: #008cba; color: #fff; }
 
 
 

@@ -182,6 +182,7 @@ V.Lang.hr = {
     M_repromaterijal: "Repromaterijal",
     M_gotovaroba: "Gotova roba",
     M_start: "Po\u010detno stanje",
+    LBL_prerada: "Prerada",
 
     //Skladište
     LBL_novaprimka: "Nova primka",

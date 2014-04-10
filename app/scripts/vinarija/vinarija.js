@@ -2,144 +2,373 @@ V.Vinarija = Marionette.ItemView.extend({
     template: window.JST['/vinarija/vinarijaView.hbs']
 
 });
-V.PreradaControl = Marionette.ItemView.extend({
-    template: window.JST['/vinarija/preradaControl.hbs'],
-    className: 'left',
-    initialize: function () {
-        var model = this.model;
-        var self = this;
-        if (model.get('vrsta') === 'G') {
-            model.set('vrsta', V.Lang['LBL_grozde']);
-            if (model.get('polozaj') == null) {
-                var grozdeList = new V.GrozdeList();
-                grozdeList.fetch({conditions: {preradaId: self.model.get('id')},
-                    success: function (fetchedList) {
-                        if (fetchedList.length > 0) {
-                            var grozde = fetchedList.models[0];
-                            grozde.fetch({success: function (grozdeFetched) {
-                                var vinograd = new V.Vinograd({id: grozdeFetched.get('vinogradId')});
-                                vinograd.fetch({success: function (vinogradFetched) {
-                                    self.model.set('polozaj', vinogradFetched.get('polozaj'));
-                                    self.render();
-                                } });
-                            }})
-                        }
-                    }});
-//                this.fetchPolozaj(grozdeList);
-            }
-        } else if (model.get('vrsta') === 'MO') {
-            model.set('vrsta', V.Lang['LBL_most']);
-        } else if (model.get('vrsta') === 'MA') {
-            model.set('vrsta', V.Lang['LBL_masulj']);
-        } else if (model.get('vrsta') === 'V') {
-            model.set('vrsta', V.Lang['LBL_vino']);
-        }
-        if (model.get('sortaNaziv') == null) {
-            var sorta = new V.Sorta({id: this.model.get('sortaId')});
-            sorta.fetch({success: function (sortaFetched) {
-                self.model.set('sortaNaziv', sortaFetched.get('naziv'));
-                self.render();
-            }});
-        }
-        if (model.get('primka') == null) {
-            var primka = new V.Primka({id: this.model.get('primkaId')});
-            primka.fetch({success: function (primkaFetched) {
-                self.model.set('primka', primkaFetched.toJSON());
-                self.render();
-            }});
-        }
+//V.PreradaControl = Marionette.ItemView.extend({
+//    template: window.JST['/vinarija/preradaControl.hbs'],
+//    className: 'left',
+//    initialize: function () {
+//        var model = this.model;
+//        var self = this;
+//        if (model.get('vrsta') === 'G') {
+//            model.set('vrsta', V.Lang['LBL_grozde']);
+//            if (model.get('polozaj') == null) {
+//                var grozdeList = new V.GrozdeList();
+//                grozdeList.fetch({conditions: {preradaId: self.model.get('id')},
+//                    success: function (fetchedList) {
+//                        if (fetchedList.length > 0) {
+//                            var grozde = fetchedList.models[0];
+//                            grozde.fetch({success: function (grozdeFetched) {
+//                                var vinograd = new V.Vinograd({id: grozdeFetched.get('vinogradId')});
+//                                vinograd.fetch({success: function (vinogradFetched) {
+//                                    self.model.set('polozaj', vinogradFetched.get('polozaj'));
+//                                    self.render();
+//                                } });
+//                            }})
+//                        }
+//                    }});
+////                this.fetchPolozaj(grozdeList);
+//            }
+//        } else if (model.get('vrsta') === 'MO') {
+//            model.set('vrsta', V.Lang['LBL_most']);
+//        } else if (model.get('vrsta') === 'MA') {
+//            model.set('vrsta', V.Lang['LBL_masulj']);
+//        } else if (model.get('vrsta') === 'V') {
+//            model.set('vrsta', V.Lang['LBL_vino']);
+//        }
+//        if (model.get('sortaNaziv') == null) {
+//            var sorta = new V.Sorta({id: this.model.get('sortaId')});
+//            sorta.fetch({success: function (sortaFetched) {
+//                self.model.set('sortaNaziv', sortaFetched.get('naziv'));
+//                self.render();
+//            }});
+//        }
+//        if (model.get('primka') == null) {
+//            var primka = new V.Primka({id: this.model.get('primkaId')});
+//            primka.fetch({success: function (primkaFetched) {
+//                self.model.set('primka', primkaFetched.toJSON());
+//                self.render();
+//            }});
+//        }
+//
+//    },
+//    fetchPolozaj: function (list) {
+//        list.fetch({conditions: {preradaId: this.model.get('id')},
+//            success: function (fetchedList) {
+//                if (fetchedList.length > 0) {
+//                    var grozde = fetchedList.models[0];
+//                    grozde.fetch({success: function (grozdeFetched) {
+//                        var vinograd = new V.Vinograd({id: grozdeFetched.get('vinogradId')});
+//                        vinograd.fetch({success: function (vinogradFetched) {
+//                            self.model.set('polozaj', vinogradFetched.get('polozaj'));
+//                            self.render();
+//                        } });
+//                    }})
+//                }
+//            }});
+//    },
+//    onRender: function () {//Ovo sam morao overrideati jer inače koristim el.hide, pa sam to morao maknuti iz ovog poziva
+//
+//    }, tryRender: function () {
+//
+//        this.template = this.templatereal;
+//        this.render();
+//        this.realRender = true;
+//
+//    }
+//});
+V.PreradaControl = function (config) {
+    var width = 250, height = 200, padding = 10, margin = 10, lineheight = 22;
 
-    },
-    fetchPolozaj: function (list) {
-        list.fetch({conditions: {preradaId: this.model.get('id')},
-            success: function (fetchedList) {
-                if (fetchedList.length > 0) {
-                    var grozde = fetchedList.models[0];
-                    grozde.fetch({success: function (grozdeFetched) {
-                        var vinograd = new V.Vinograd({id: grozdeFetched.get('vinogradId')});
-                        vinograd.fetch({success: function (vinogradFetched) {
-                            self.model.set('polozaj', vinogradFetched.get('polozaj'));
-                            self.render();
-                        } });
-                    }})
-                }
-            }});
-    },
-    onRender: function () {//Ovo sam morao overrideati jer inače koristim el.hide, pa sam to morao maknuti iz ovog poziva
 
-    }, tryRender: function () {
-
-        this.template = this.templatereal;
-        this.render();
-        this.realRender = true;
-
+    function control(prerada) {
+        prerada.on("mouseover",function () {
+            d3.select(this).select(".box").classed("selected", true)
+            ;
+        }).on("mouseout", function () {
+                d3.select(this).select(".box").classed("selected", false)
+            });
+        prerada.append("rect")
+            .attr("width", width)
+            .attr("height", height)
+            .attr("class", "box");
+        var primkaText = prerada.append("text")  //broj
+            .attr("x", padding)
+            .attr("y", padding)
+            .attr("dy", ".71em")
+            .attr("class", "subtitle")
+            .text(function (d) {
+                return d.broj
+            });
+        prerada.append("text")   //datum
+            .attr("x", width - padding)
+            .attr("y", padding)
+            .attr("dy", ".71em")
+            .attr("class", "subtitle")
+            .attr("text-anchor", "end")
+            .text(function (d) {
+                return moment(d.datum).format('DD.MM.YYYY')
+            });
+        prerada.append("rect")  //titleContainer
+            .attr("x", padding)
+            .attr("y", padding + lineheight)
+            .attr("width", width - padding * 2)
+            .attr("height", lineheight * 2)
+            .attr("fill", "#BBDDE9");
+        prerada.append("text")   //vrsta
+            .attr("x", width / 2)
+            .attr("y", padding + lineheight * 2)
+            .attr("dy", ".35em")
+            .attr("text-anchor", "middle")
+            .attr("class", "title")
+            .text(function (d) {
+                return d.vrsta
+            });
+        prerada.append("text")   //sorta
+            .attr("x", padding)
+            .attr("y", padding + lineheight * 4)
+            .attr("dy", ".71em")
+            .attr("class", "bold")
+            .text(function (d) {
+                return d.sortaNaziv
+            });
+        prerada.append("text")   //kolicina
+            .attr("x", width - padding)
+            .attr("y", padding + lineheight * 4)
+            .attr("dy", ".71em")
+            .attr("class", "bold")
+            .attr("text-anchor", "end")
+            .text(function (d) {
+                return d.kolicina
+            });
+        prerada.append("text")   //polozaj
+            .attr("x", padding)
+            .attr("y", padding + lineheight * 5)
+            .attr("dy", ".71em")
+            .text(function (d) {
+                return d.polozaj
+            });
+        prerada.append("text")   //partner
+            .attr("x", padding)
+            .attr("y", padding + lineheight * 6)
+            .attr("dy", ".71em")
+            .text(function (d) {
+                return d.partner
+            });
     }
-});
-V.Ulaz = Marionette.CompositeView.extend({
-    template: window.JST['/vinarija/ulazView.hbs'],
-    itemView: V.PreradaControl,
-    itemViewContainer: '#prerade',
+
+    control.width = function (value) {
+        if (!arguments.length) return width;
+        width = value;
+        return control;
+    };
+    control.height = function (value) {
+        if (!arguments.length) return height;
+        height = value;
+        return control;
+    };
+    return control;
+
+};
+V.Ulaz = Marionette.ItemView.extend({
+    template: window.JST['/controls/loading.hbs'],
+    templatereal: window.JST['/vinarija/ulazView.hbs'],
     events: {
         'click .prerada-control': 'viewPreradaPanel',
         'click #noviBtn': 'viewPreradaPanel',
         'click #izvjestajPartnerBtn': 'izvjestajPartner',
         'click #izvjestajSortaBtn': 'izvjestajSorta'
     },
-    initialize: function () {
+    initData: function () {
         this.startDate = moment();
         this.currentDate = this.startDate;
-        var preradaList = new V.PreradaList();
+        var preradaList = this.preradaList = new V.PreradaList();
         preradaList.comparator = function (model) {
             return -model.get('datum');
         };
-        this.collection = new V.PreradaList();
-//        this.collection = preradaList;
-//        this.collection.sort();
-
+        //Dohvati indeks za vino grožđe masulj mošt
+        var sirovina = this.sirovina = {};
+        var grozde;
+        var grupaSystem = new V.System({key: 'GRUPA_GROZDE'});
+        grupaSystem.selectValue().then(function (value) {
+            return new V.Grupa({id: value}).getGrupa();
+        }).then(function (grupa) {
+                sirovina[grupa.id] = {naziv: grupa.get('naziv'), vrsta: 'G'};
+                return new V.System({key: 'GRUPA_MASULJ'}).selectValue();
+            }).then(function (value) {
+                return new V.Grupa({id: value}).getGrupa();
+            }).then(function (grupa) {
+                sirovina[grupa.id] = {naziv: grupa.get('naziv'), vrsta: 'MA'};
+                return new V.System({key: 'GRUPA_MOST'}).selectValue();
+            }).then(function (value) {
+                return new V.Grupa({id: value}).getGrupa();
+            }).then(function (grupa) {
+                sirovina[grupa.id] = {naziv: grupa.get('naziv'), vrsta: 'MO'};
+                return new V.System({key: 'GRUPA_VINO'}).selectValue();
+            }).then(function (value) {
+                return new V.Grupa({id: value}).getGrupa();
+            }).then(function (grupa) {
+                sirovina[grupa.id] = {naziv: grupa.get('naziv'), vrsta: 'V'};
+            });
         var self = this;
         preradaList.fetch({
             success: function (list) {
-//                list.sort();
-
                 preradaList.sort();
-                self.collection.add(preradaList.models);
-//                self.collection.trigger('reset');
-                self.fillSummary();
-//                self.renderModel();
-                console.log('Prerade fetched');
+                var promises = [];
+                //Parse date and fill date
+                for (var i = 0, j = preradaList.length; i < j; ++i) {
+                    var prerada = preradaList.models[i];
+                    var datum = moment(prerada.get('datum'));
+                    prerada.set('mjesec', datum.format('MMMM YYYY'));
+
+
+                    //Dohvati sortu
+                    promises.push(self.fetchSorta(prerada));
+
+                    //Dohvati količinu
+                    promises.push(self.fetchPrimka(prerada));
+
+
+                }
+
+
+                Q.allSettled(promises).then(function (results) {
+
+                    self.tryRender();
+                });
+
 
             }
         });
     },
-    fillMonths: function () {
+    fetchSorta: function (prerada) {
+        var deferred = Q.defer();
+        var sorta = new V.Sorta({id: prerada.get('sortaId')});
+        sorta.fetch({success: function (model) {
+            prerada.set('sortaNaziv', sorta.get('naziv'));
+            deferred.resolve(null);
+        }});
+        return deferred.promise;
 
-        var months = [];
-        this.renderList = new Backbone.Collection();
-        for (var i = 0; i < 6; ++i) {
-            var title = this.currentDate.format('MMMM YYYY');
-            var filteredPrerade = new V.PreradaList(this.preradaList.fromMonth(this.currentDate.month(), this.currentDate.year()));
+    },
+    fetchPrimka: function (prerada) {
+        var self = this;
+        var deferred = Q.defer();
+        var primka = new V.Primka({id: prerada.get('primkaId')});
+        primka.fetch({success: function (model) {
+            prerada.set('kolicina', primka.get('kolicina'));
+            prerada.set('vrsta', self.sirovina[ primka.get('grupaId')].naziv);
+            var vrsta = self.sirovina[ primka.get('grupaId')].vrsta;
+            if (vrsta === 'G') {
+                var grozde = new V.Grozde({preradaId: prerada.get('id')});
+                grozde.getVinograd().then(function (vinograd) {
+                    prerada.set('polozaj', vinograd.get('polozaj'));
+                    return new V.Partner({id: primka.get('partnerId')}).getNaziv()
+                }).then(function (naziv) {
+                        prerada.set('partner', naziv);
+                        deferred.resolve(null);
+                    });
+            } else {
+                new V.Partner({id: primka.get('partnerId')}).getNaziv()
+                    .then(function (naziv) {
+                        prerada.set('partner', naziv);
+                        deferred.resolve(null);
+                    });
+            }
 
-//            months.push({
-//                title: title,
-//                content: filteredPrerade
-//            });
-            months.push(filteredPrerade);
-            this.currentDate.subtract('months', 1);
-        }
-        this.renderList.set(months);
-        var filteredPreradaList = new V.PreradaList(months);
-//        var cronoView = new V.PreradaListView({
-//            collection: filteredPreradaList
-//        });
-//        var render = cronoView.render().el;
-//        this.$('#prerade').append(render);
-        this.collection = filteredPreradaList;
 
+        }});
+        return deferred.promise;
+    },
+    tryRender: function () {
+        this.template = this.templatereal;
+        this.realRender = true;
+        this.render();
 
     },
     onRender: function () {
-//        this.$el.hide();
-//        _.defer(_.bind(this.transitionIn_, this));
+        this.$el.hide();
+        _.defer(_.bind(this.transitionIn_, this));
+        if (this.realRender) {
+            this.fillSummary(this.preradaList);
+            var preradaList = this.preradaList.toJSON();
+            this.d3(preradaList);
+        } else {
+            this.initData();
+        }
+    },
+    d3: function (preradaList) {
+        var nestedList = d3.nest()
+            .key(function (d) {
+                return d.mjesec;
+            })
+            .entries(preradaList);
+        var canvasWidth = window.innerWidth, canvasHeight = 400, canvasPadding = 20, margin = 10;
+        var canvas = d3.select(this.el).select("#prerade").append("svg")
+            .attr("width", canvasWidth).attr("height", canvasHeight);
+        //Moram procijeniti koliko ih ide u red
+        var preradaControl = new V.PreradaControl();
+        var preradaWidth = preradaControl.width();
+        var preradaHeight = preradaControl.height();
+        var preradaURed = Math.floor(canvasWidth / (preradaWidth + margin));
+        var preradaCounter = 0, mjesecCounter = 0;
+        var red = 0, stupac = 0;
+
+        //Prvo moram postaviti upisivanje mjeseci
+        canvas.selectAll("g").data(nestedList)
+            .enter().append("g")
+            .attr("transform", function (d, i) {
+                return "translate(" + canvasPadding + "," + mjesecCounter++ * (300 + margin) + ")";
+            })
+            .call(function (mjesecContainer) {
+                mjesecContainer.append("text")
+                    .text(function (d) {
+                        return d.key;
+                    })
+                    .attr("class", "mjesec-title")
+                    .attr('x', canvasWidth / 2)
+                    .attr('y', 20)
+                    .attr("text-anchor", "middle");
+                var preradaContainer = mjesecContainer.append("g")
+                    .attr("transform", function (d, i) {
+                        return "translate(0, 40)";
+                    });
+                preradaCounter = 0;
+                red = 0;
+                stupac = 0;
+                preradaContainer.selectAll("g").data(function (d) {
+                    //Proračunaj height za svaki mjesec
+                    var brojPrerada = d.values.length;
+                    var brojRedova = Math.ceil(brojPrerada / preradaURed);
+
+                    canvasHeight += brojRedova * (250 + margin);
+                    canvas.attr("height", canvasHeight);
+                    return d.values;
+                })
+                    .enter().append("g")
+                    .attr("data-id", function (d) {
+                        return d.id
+                    })
+                    .attr("class", "prerada-control")
+                    .attr("transform", function (d, i) {
+                        preradaCounter++;
+                        if (i === 0) {
+                            stupac = i;
+                        }
+
+                        if (stupac >= preradaURed) {
+                            red++;
+                            stupac = 0;
+                            preradaCounter = 0;
+                        }
+                        return "translate(" + stupac++ * (preradaWidth + margin) + "," + red * (preradaHeight + margin) + ")";
+
+                    })
+                    .call(preradaControl);
+
+            });
+
+    },
+    fillMonths: function () {
+
 
     },
     viewPreradaPanel: function (e) {
@@ -157,8 +386,9 @@ V.Ulaz = Marionette.CompositeView.extend({
         document.location.hash = '#/' + V.Lang['URL_print'] + '/' + V.Lang['URL_ulaz_prema_sorti'] + '/';
         e.preventDefault();
     },
-    fillSummary: function () {
-        this.$('#brojPrimki .value').html(this.collection.length);
+    fillSummary: function (preradaList) {
+
+        this.$('#brojPrimki .value').html(preradaList.length);
     }
 });
 
@@ -209,18 +439,18 @@ V.PreradaPanel = Marionette.ItemView.extend({
 
         V.App.vent.on("sorta:selected", function (data) {
             $('#modal').foundation('reveal', 'close');
-            $('#sorta input').val(data.get('naziv') || '');
-            $('#sorta').data('id', data.get('id'));
+            $('#sorta input').val(data.naziv || '');
+            $('#sorta').data('id', data.id);
         });
         V.App.vent.on("partner:selected", function (data) {
             $('#modal').foundation('reveal', 'close');
-            $('#partner input').val(data.get('naziv') || '');
-            $('#partner').data('id', data.get('id'));
+            $('#partner input').val(data.naziv || '');
+            $('#partner').data('id', data.id);
         });
         V.App.vent.on("vinograd:selected", function (data) {
             $('#modal').foundation('reveal', 'close');
-            $('#vinograd input').val(data.get('polozaj') || '');
-            $('#vinograd').data('id', data.get('id'));
+            $('#vinograd input').val(data.polozaj || '');
+            $('#vinograd').data('id', data.id);
         });
     },
     fetchData: function () {
@@ -392,6 +622,7 @@ V.PreradaPanel = Marionette.ItemView.extend({
         grupaSystem.fetch({success: function (model) {
             //Pronađena grupa
             grupaId = grupaSystem.get('value');
+            primkaModel.set('grupaId', grupaId);
             //Treba mi naziv sorte
             var sorta = new V.Sorta({id: data.sortaId});
             sorta.fetch({success: function (sortaFetched) {
@@ -405,6 +636,7 @@ V.PreradaPanel = Marionette.ItemView.extend({
                     stavka.primkaId = primkaModel.get('id');
                     stavka.grupaId = grupaId;
                     stavka.artikl = artikl.toJSON();
+                    stavka.artiklId = stavka.artikl.id;
                     stavka.kolicina = data.kolicinaNetto;
                     stavka.cijena = data.cijena;
                     stavka.iznos = data.iznos;
@@ -512,47 +744,6 @@ V.Vina = Marionette.ItemView.extend({
                     vrsta: self.options.vrsta
                 },
                 success: function (list) {
-//                //            alert('fetched stanje');
-//                self.stages = 1;
-//                self.progress = 0;
-//                for (var i = 0, j = list.length; i < j; ++i) {
-//                    var stanje = list.models[i];
-//
-//                    if (stanje.get('sortaId') !== null) {
-//                        var sorta = new V.Sorta({
-//                            id: stanje.get('sortaId')
-//                        });
-//                        //                    sorta.set('title', sorta.get('id'));
-//                        if (!self.sortaList.contains(sorta)) {
-//                            sorta.set('content', []);
-//                            sorta.set('posude', {});
-//                            self.sortaList.add(sorta);
-//
-//                        }
-//
-//                        var posuda = new V.Posuda({
-//                            id: stanje.get('posudaId')
-//                        });
-//                        var sortaFromList = self.sortaList.get(sorta.id);
-//                        var posude = sortaFromList.get('posude');
-//                        if (typeof posude[posuda.get('id')] !== 'undefined') {
-//                            if (posude[posuda.get('id')].get('datum') < stanje.get('datum')) {
-//                                posuda.set('datum', stanje.get('datum'));
-//                                posuda.set('stanje', stanje.get('stanje'));
-//                                posuda.set('vrsta', self.options.vrsta);
-//                                posude[posuda.get('id')] = posuda;
-//
-//                            }
-//                        } else {
-//                            posuda.set('datum', stanje.get('datum'));
-//                            posuda.set('stanje', stanje.get('stanje'));
-//                            posuda.set('vrsta', self.options.vrsta);
-//                            posude[posuda.get('id')] = posuda;
-//                        }
-//                    }
-//
-//                }
-//                self.fetchSorta();
                     var promises = [];
                     for (var i = 0, j = list.length; i < j; ++i) {
                         var stanje = list.models[i];
@@ -648,7 +839,7 @@ V.Vina = Marionette.ItemView.extend({
         var posudaURed = Math.floor(canvasWidth / (200 + margin));
         var posudaCounter = 0, sortaCounter = 0;
         var red = 0, stupac = 0;
-        var posudaControl = new PosudaControl();
+        var posudaControl = new V.PosudaControl();
         //Prvo moram postaviti upisivanje sorti
         canvas.selectAll("g").data(nestedList)
             .enter().append("g")
@@ -660,6 +851,7 @@ V.Vina = Marionette.ItemView.extend({
                     .text(function (d) {
                         return d.key;
                     })
+                    .attr("class", "sorta-title")
                     .attr('x', 0)
                     .attr('y', 30);
                 var posudaContainer = sortaContainer.append("g")
@@ -845,6 +1037,14 @@ V.VinoPanel = Marionette.ItemView.extend({
                     var sorta = new V.Sorta({id: self.stanje.get('sortaId')});
                     sorta.fetch({success: function (sortaModel) {
                         self.model.set('sorta', sortaModel.toJSON());
+                        self.model.set('sortaNaziv', sortaModel.get('naziv'));
+                        if (sortaModel.get('vrsta') === 'B') {
+                            self.model.set('boja', 'white');
+                        } else if (sorta.get('vrsta') === 'C') {
+                            self.model.set('boja', 'red');
+                        } else {
+                            self.model.set('boja', 'white');
+                        }
                         self.tryRender();
                     }});
 
@@ -865,61 +1065,206 @@ V.VinoPanel = Marionette.ItemView.extend({
     onRender: function () {
         var self = this;
         if (this.realRender) {
-            var posudaControl = new V.PosudaControl({model: this.model}).render().el;
-            this.$('#posuda-placer').html(posudaControl);
+            var posudaControl = new V.PosudaControl();
+            var canvasWidth = posudaControl.width();
+            var canvasHeight = posudaControl.height();
+            var posude = [this.model.toJSON()];
+            var posudaCanvas = d3.select(this.el).select("#posuda-placer").append("svg")
+                .attr("width", canvasWidth).attr("height", canvasHeight);
+            posudaCanvas.selectAll("g")
+                .data(posude).enter().append("g")
+                .attr("class", "posuda-control")
+                .call(posudaControl);
 
             //Moram dohvatiti naloge od svih faza vino mošt masulj grožđe
             var vrsta = this.model.get('vrsta');
+            this.masterList = new V.NalogList();
+//            this.nalogList.on('change reset add remove', this.d3, this);
+
             var vinoNalozi, mostNalozi, masuljNalozi, primke;
+            var promises = this.promises = [];
             switch (vrsta) {
                 case 'V':
-                    this.processVinoNalog('V', this.stanje.get('vrstaId'), 'nalogContainer');
+                    promises.push(this.processVinoNalog('V', this.stanje.get('vrstaId'), 'nalogContainer'));
+
                     break;
 
                 case 'MO':
-                    this.processMostNalog('MO', this.stanje.get('vrstaId'), 'nalogContainer');
+                    promises.push(this.processMostNalog('MO', this.stanje.get('vrstaId'), 'nalogContainer'));
                     break;
                 case 'MA':
-                    this.processMasuljNalog('MA', this.stanje.get('vrstaId'), 'nalogContainer');
+                    promises.push(this.processMasuljNalog('MA', this.stanje.get('vrstaId'), 'nalogContainer'));
                     break;
 
             }
+            Q.all(promises).then(function() {
+               self.d3nalozi(self.masterList.toJSON());
+            });
+            this.d3actions();
+
+
 
             Foundation.init();
 
         }
     },
-    processVinoNalog: function (vrsta, vrstaId, containerId) {
+    d3nalozi: function(nalogList) {
+        var priority_order = ['V', "MO", 'MA', 'G'];
+            var nestedList = d3.nest()
+            .key(function (d) {
+                return d.vrsta;
+            })
+                .sortKeys(function(a,b) { return priority_order.indexOf(a) - priority_order.indexOf(b); })
+            .entries(nalogList);
+        var containerWidth = this.$("#nalogContainer").width();
+        var canvasWidth = containerWidth, canvasHeight = 400, canvasPadding = 20, margin = 10;
+        var canvas = this.canvas = d3.select(this.el).select("#nalogContainer").append("svg")
+            .attr("width", canvasWidth-canvasPadding).attr("height", canvasHeight);
+        var nalogControl = new V.NalogControl();
+        var nalogWidth = nalogControl.width();
+        var nalogHeight = nalogControl.height();
+        var nalogURed = Math.floor(canvasWidth / (nalogWidth + margin));
+        var nalogCounter = 0, vrstaCounter = 0;
+        var red = 0, stupac = 0;
+
+        //Prvo moram postaviti upisivanje po vrsti
+        canvas.selectAll("g").data(nestedList)
+            .enter().append("g")
+            .attr("transform", function (d, i) {
+                return "translate(" + canvasPadding + "," + vrstaCounter++ * (300 + margin) + ")";
+            })
+            .call(function (vrstaContainer) {
+                vrstaContainer.append("text")
+                    .text(function (d) {
+                        return V.Lang['VRSTA_' + d.key];
+                    })
+                    .attr("class", "sorta-title")
+                    .attr('x', canvasWidth / 2)
+                    .attr('y', 20)
+                    .attr("text-anchor", "middle");
+                var nalogaContainer = vrstaContainer.append("g")
+                    .attr("transform", function (d, i) {
+                        return "translate(0, 40)";
+                    });
+                nalogCounter = 0;
+                red = 0;
+                stupac = 0;
+                nalogaContainer.selectAll("g").data(function (d) {
+                    //Proračunaj height za svaki mjesec
+                    var brojPrerada = d.values.length;
+                    var brojRedova = Math.ceil(brojPrerada / nalogURed);
+
+                    canvasHeight += brojRedova * (250 + margin);
+                    canvas.attr("height", canvasHeight);
+                    return d.values;
+                })
+                    .enter().append("g")
+                    .attr("data-id", function (d) {
+                        return d.id
+                    })
+                    .attr("class", "prerada-control")
+                    .attr("transform", function (d, i) {
+                        nalogCounter++;
+                        if (i === 0) {
+                            stupac = i;
+                        }
+
+                        if (stupac >= nalogURed) {
+                            red++;
+                            stupac = 0;
+                            nalogCounter = 0;
+                        }
+                        return "translate(" + stupac++ * (nalogWidth + margin) + "," + red * (nalogHeight + margin) + ")";
+
+                    })
+                    .call(nalogControl);
+
+
+            });
+
+    },
+    /**
+     *  Dodaje akcije na naloge
+     */
+    d3actions: function() {
+        var containerWidth = this.$(".side-nav").width();
+        var canvasWidth = containerWidth, canvasHeight = 400, canvasPadding = 20, margin = 10;
+        var nav = this.canvas = d3.select(this.el).select(".side-nav");
+        var vrsta = this.model.get('vrsta');
+        var actions = [];
+        switch (vrsta) {
+            case 'V':
+                actions.push(new V.SredstvoAction());
+                actions.push(new V.AnalizaAction());
+                actions.push(new V.PretokAction());
+                break;
+
+            case 'MO':
+
+                break;
+            case 'MA':
+
+                break;
+
+        }
+        for (var i = 0, j = actions.length; i<j; ++i) {
+            var action  = actions[i];
+            var button = nav.append("li").append("a").attr("href","#")
+                .attr("class", "button success fullWidth")
+                .html(action.text());
+            button.on("click", action.action);
+        }
+    },
+        processVinoNalog: function (vrsta, vrstaId, containerId) {
         var self = this;
-        var nalogList = new V.NalogList();
-        nalogList.fetch({conditions: {vrstaId: vrstaId},
+            var deferred = Q.defer();
+
+        new V.NalogList().fetch({conditions: {vrstaId: vrstaId},add: true,
 
             success: function (list) {
                 //Dohvaćam naloge od prve vrste
-                var nalogVrsta = new V.NalogVrsta({model: new Backbone.Model({vrsta: vrsta}), collection: nalogList});
-                self.$('#' + containerId).append(nalogVrsta.render().el);
+//                self.masterList.add(list);
+
+//                self.d3(list.toJSON());
+                self.masterList.add(list.models);
                 //Tražim da li je to vino nastalo od mošta
                 var vino = new V.Vino({id: vrstaId}).fetch({success: function (vinoModel) {
                     var mostId = vinoModel.get('mostId');
 
                     if (mostId) {
-                        self.processMostNalog('MO', mostId, containerId);
+                        var promise = self.processMostNalog('MO', mostId, containerId);
+                        promise.then(function(result) {
+                            self.masterList.add(result);
+                            deferred.resolve();
+                        });
+                        self.promises.push(promise);
+                    } else {
+
+                        deferred.resolve();
                     }
+
                     //Provjeravam za combo
-                    if (typeof vinoModel.get('combos') !== 'undefined' && vinoModel.get('combos').length > 0) {
-                        for (var i = 0, j = vinoModel.get('combos').length; i < j; ++i) {
-                            var comboVino = vinoModel.get('combos')[i];
-                            comboVino.currentColor = i;
-                            self.processCombo('V', comboVino, containerId);
-                        }
-                    }
+//                    if (typeof vinoModel.get('combos') !== 'undefined' && vinoModel.get('combos') !== null && vinoModel.get('combos').length > 0) {
+//                        for (var i = 0, j = vinoModel.get('combos').length; i < j; ++i) {
+//                            var comboVino = vinoModel.get('combos')[i];
+//                            comboVino.currentColor = i;
+//                            self.processCombo('V', comboVino, containerId);
+//                        }
+//                    }
                 },
                     error: function (model, error) {
                         console.log('Error fetching vino: ' + error);
+                        deferred.resolve();
                     }
                 });
+            },
+            error: function (model, error) {
+                console.log('Error fetching listu naloga za vino: ' + error);
+                deferred.resolve();
             }
+
         });
+            return deferred.promise;
     },
     processCombo: function (vrsta, combo, containerId) {
         var comboModel = new Backbone.Model(combo);
@@ -939,40 +1284,51 @@ V.VinoPanel = Marionette.ItemView.extend({
 
         }
 //        this.renderCombo('V', comboModel.get('parentId'), comboModel.get('id'));
+
     },
     processMostNalog: function (vrsta, vrstaId, containerId) {
-
-        var nalogList = new V.NalogList();
-        nalogList.fetch({conditions: {vrstaId: vrstaId},
+        var deferred = Q.defer();
+        var self = this;
+        new V.NalogList().fetch({conditions: {vrstaId: vrstaId},add: true,
 
             success: function (list) {
-                //Dohvaćam naloge od prve vrste
-                var nalogVrsta = new V.NalogVrsta({model: new Backbone.Model({vrsta: vrsta}), collection: nalogList});
-                self.$('#' + containerId).append(nalogVrsta.render().el);
-                //Tražim da li je to vino nastalo od mošta
-                var vino = new V.Most({id: vrstaId}).fetch({success: function (mostModel) {
 
+                //Tražim da li je to most nastalo od maulja
+                var most = new V.Most({id: vrstaId}).fetch({success: function (mostModel) {
+                    var masuljId = mostModel.get('masuljId');
+
+                    if (masuljId) {
+                        promise = self.processMasuljNalog('MA', masuljId, containerId);
+                        promise.then(function(result) {
+                            self.masterList.add(result);
+                            deferred.resolve(list.models);
+                        });
+                        self.promises.push(promise);
+                    }else {
+                        deferred.resolve(list);
+                    }
+
+
+                },
+                    error: function (model, error) {
+                    console.log('Error fetching most: ' + error);
+                    deferred.resolve();
                 }
-                });
+            });
             }
         });
+        return deferred.promise;
     },
     processMasuljNalog: function (vrsta, vrstaId, containerId) {
-
-        var nalogList = new V.NalogList();
-        nalogList.fetch({conditions: {vrstaId: vrstaId},
+        var deferred = Q.defer();
+        var self = this;
+        new V.NalogList().fetch({conditions: {vrstaId: vrstaId},add: true,
 
             success: function (list) {
-                //Dohvaćam naloge od prve vrste
-                var nalogVrsta = new V.NalogVrsta({model: new Backbone.Model({vrsta: vrsta}), collection: nalogList});
-                self.$('#' + containerId).append(nalogVrsta.render().el);
-                //Tražim da li je to vino nastalo od mošta
-                var vino = new V.Most({id: vrstaId}).fetch({success: function (mostModel) {
-
-                }
-                });
+                deferred.resolve(list.models);
             }
         });
+        return deferred.promise;
     },
     viewNalog: function (e) {
         var id = e.currentTarget.dataset['id'];

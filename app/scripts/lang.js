@@ -180,6 +180,7 @@ V.Lang.en = {
     M_repromaterijal: "Raw material",
     M_gotovaroba: "Product warehouse",
     M_start: "Initial state",
+    LBL_prerada: "Input",
 
     //Skladište
     LBL_novaprimka: "Goods receipt",

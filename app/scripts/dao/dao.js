@@ -177,8 +177,9 @@ V.ArtiklList = Backbone.Collection.extend({
     url: 'artikl',
     storeName: 'Artikl',
     database: database,
-    enoloskaSredstva: function (filteredList, callback, stanje) {
+    enoloskaSredstva: function (filteredList, stanje) {
         var self = this;
+        var deferred = Q.defer();
         this.fetch({success: function (list) {
             for (var i = 0, j = list.length; i < j; ++i) {
                 var artikl = list.models[i];
@@ -191,11 +192,13 @@ V.ArtiklList = Backbone.Collection.extend({
                 }
 
             }
-            callback(filteredList);
+            deferred.resolve(filteredList);
         }});
+        return deferred.promise;
     },
-    repromaterijal: function (filteredList, callback, stanje) {
+    repromaterijal: function (filteredList, stanje) {
         var self = this;
+        var deferred = Q.defer();
         this.fetch({success: function (list) {
             for (var i = 0, j = list.length; i < j; ++i) {
                 var artikl = list.models[i];
@@ -208,11 +211,13 @@ V.ArtiklList = Backbone.Collection.extend({
                 }
 
             }
-            callback(filteredList);
+            deferred.resolve(filteredList);
         }});
+        return deferred.promise;
     },
     gotoviProizvod: function (filteredList, callback, stanje) {
         var self = this;
+        var deferred = Q.defer();
         this.fetch({success: function (list) {
             for (var i = 0, j = list.length; i < j; ++i) {
                 var artikl = list.models[i];
@@ -225,11 +230,13 @@ V.ArtiklList = Backbone.Collection.extend({
                 }
 
             }
-            callback(filteredList);
+            deferred.resolve(filteredList);
         }});
+        return deferred.promise;
     },
     sirovina: function (filteredList, callback, stanje) {
         var self = this;
+        var deferred = Q.defer();
         this.fetch({success: function (list) {
             for (var i = 0, j = list.length; i < j; ++i) {
                 var artikl = list.models[i];
@@ -241,8 +248,9 @@ V.ArtiklList = Backbone.Collection.extend({
                     self.fetchStanje(artikl, stanjeSuccess);
                 }
             }
-            callback(filteredList);
+            deferred.resolve(filteredList);
         }});
+        return deferred.promise;
     },
     filterByGrupa: function (list, artikl, oznaka) {
         var grupa = new V.Grupa({id: artikl.get('grupaId')});
@@ -347,6 +355,18 @@ V.Grozde = Backbone.Model.extend({
         primkaId: null,
         primkaStavkaId: null,
         userId: null
+    },
+    getVinograd: function () {
+        var deferred = Q.defer();
+        this.fetch({index: {name: 'preradaId', value: this.get('preradaId')},success: function (model) {
+            new V.Vinograd({id: model.get('vinogradId')}).fetch({success: function(vinograd) {
+                deferred.resolve(vinograd);
+            }});
+
+        }, error: function (model, error) {
+            deferred.reject(error);
+        }});
+        return deferred.promise;
     }
 });
 V.GrozdeList = Backbone.Collection.extend({
@@ -354,6 +374,7 @@ V.GrozdeList = Backbone.Collection.extend({
     url: 'grozde',
     storeName: 'Grozde',
     database: database
+
 
 });
 V.GrozdeCombo = Backbone.Model.extend({
@@ -403,6 +424,25 @@ V.Grupa = Backbone.Model.extend({
 //        grupa.fetch({success: function(model) {
 //
 //        }});
+
+    },
+    getNaziv: function () {
+        var deferred = Q.defer();
+        this.fetch({success: function (model) {
+            deferred.resolve(model.get('naziv'));
+        }, error: function (model, error) {
+            deferred.reject(error);
+        }});
+        return deferred.promise;
+    },
+    getGrupa: function () {
+        var deferred = Q.defer();
+        this.fetch({success: function (model) {
+            deferred.resolve(model);
+        }, error: function (model, error) {
+            deferred.reject(error);
+        }});
+        return deferred.promise;
     }
 });
 V.GrupaList = Backbone.Collection.extend({
@@ -695,6 +735,15 @@ V.Parametar = Backbone.Model.extend({
         jedinica: null,
         cijena: null,
         userId: null
+    },
+    getModel: function () {
+        var deferred = Q.defer();
+        this.fetch({success: function (model) {
+            deferred.resolve(model);
+        }, error: function (model, error) {
+            deferred.reject(error);
+        }});
+        return deferred.promise;
     }
 });
 V.ParametarList = Backbone.Collection.extend({
@@ -718,6 +767,15 @@ V.Partner = Backbone.Model.extend({
         oib: null,
         mibpg: null,
         userId: null
+    },
+    getNaziv: function () {
+        var deferred = Q.defer();
+        this.fetch({success: function (model) {
+            deferred.resolve(model.get('naziv'));
+        }, error: function (model, error) {
+            deferred.reject(error);
+        }});
+        return deferred.promise;
     }
 });
 V.PartnerList = Backbone.Collection.extend({
@@ -778,6 +836,15 @@ V.Posuda = Backbone.Model.extend({
         currentSekcija: null,
         sorta: null,
         userId: null
+    },
+    getModel: function () {
+        var deferred = Q.defer();
+        this.fetch({success: function (model) {
+            deferred.resolve(model);
+        }, error: function (model, error) {
+            deferred.reject(error);
+        }});
+        return deferred.promise;
     }
 });
 V.PosudaList = Backbone.Collection.extend({
@@ -1175,8 +1242,14 @@ V.System = Backbone.Model.extend({
     },
     keys: ['SYNC', 'SETUP', 'DB_VERSION', 'WINERY_LOGO', 'WINERY_PRODUCER', 'WINERY',
         'PUNJENJE', 'OZNACAVANJE', 'PAKIRANJE'],
-    selectValue: function (key) {
-
+    selectValue: function () {
+        var deferred = Q.defer();
+        this.fetch({success: function (model) {
+            deferred.resolve(model.get('value'));
+        }, error: function (model, error) {
+            deferred.reject(error);
+        }});
+        return deferred.promise;
     }
 });
 V.SystemList = Backbone.Collection.extend({

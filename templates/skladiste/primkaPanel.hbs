@@ -53,16 +53,27 @@
 <form id="stavkaForm">
 
     <div class="row fullWidth artikl-selector">
+
         <div class="large-5 column">
             <div class="row">
+
                 <div class="large-2 column">
                     <h4>{{i18n 'LBL_artikli'}}</h4>
                 </div>
+                <div class="small-12 column">
+                    <div class="row collapse">
+                        <div class="small-11 column"><input type="text" placeholder="{{LBL_search}}"/></div>
+                        <div class="small-1 column">
+                            <a href="#" class="button postfix search-btn"><img src="/images/search-icon.svg" alt="search-btn"
+                                                                               width="16"/></a>
+                        </div>
+                    </div>
+                </div>
                 <div class="large-10 column end">
-                <div id="artiklSearch"></div>
+
                 </div>
             </div>
-            <div id="artiklTable"></div>
+            <div id="selector-items"></div>
         </div>
         <div class="large-5 column end">
             <div class="row">

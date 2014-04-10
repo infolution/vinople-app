@@ -24,21 +24,143 @@ V.Sorte = Marionette.ItemView.extend({
         this.sorteList.fetch();
     }
 });
-V.VinogradWidget = Marionette.ItemView.extend({
-    template: window.JST['/vinogradi/vinogradWidget.hbs']
-});
-V.Vinogradi = Marionette.ItemView.extend({
-    template: window.JST['/vinogradi/vinogradi.hbs'],
-    initialize: function() {
-        this.vinogradiList = new V.VinogradList();
-        this.vinogradiList.fetch();
-        this.vinogradItems = new V.VinogradWidget({collection: this.vinogradiList});
-        var self = this;
-        this.vinogradiList.on('sync', function() {
-            var render = self.vinogradItems.render().el;
-            self.$("#vinogradi").append(render);
-        });
+V.VinogradWidget = function(config) {
+    var width = config.canvasWidth - config.canvasPadding, height = 130, padding = 10, margin = 10, lineheight= 25,
+        sortaWidth = 150;
 
+    function control(vinograd) {
+        vinograd.on("mouseover", function() {
+            d3.select(this).select(".box").classed("selected",true)
+            ;
+        }).on("mouseout", function() {
+                d3.select(this).select(".box").classed("selected",false)
+            });
+        vinograd.append("rect")
+            .attr("width", width)
+            .attr("height", height)
+            .attr("class", "box");
+        var polozaj = vinograd.append("text")   //položaj
+            .attr("x", padding)
+            .attr("y", padding)
+            .attr("dy",".71em")
+            .attr("class","polozaj")
+            .text(function(d) {return d.polozaj});
+//            var bbox = polozaj[0][0].getBBox();  //Vraća mi 0
+        var bbox = {width: 150, x : 0};
+        vinograd.append("text")   //površina
+            .attr("x", padding*6 + bbox.x+bbox.width)
+            .attr("y", padding+lineheight/2)
+
+            .attr("text-anchor", "middle")
+            .attr("class","bold")
+            .text(function(d) {return d.povrsina});
+        vinograd.append("text")   //jedinica
+            .attr("x", padding*6 + bbox.x+bbox.width)
+            .attr("y", padding+lineheight/1.5)
+            .attr("dy",".71em")
+            .attr("text-anchor", "middle")
+            .text(function(d) {return d.jedinica});
+        vinograd.append("text")   //arkod
+            .attr("x", padding*20 + bbox.x+bbox.width)
+            .attr("y", padding+lineheight/2)
+
+            .attr("text-anchor", "middle")
+            .attr("class","bold")
+            .text(function(d) {return d.arkod});
+        vinograd.append("text")   //arkod tekst
+            .attr("x", padding*20 + bbox.x+bbox.width)
+            .attr("y", padding+lineheight/1.5)
+            .attr("dy",".71em")
+            .attr("text-anchor", "middle")
+            .text("Arkod");
+        vinograd.append("text")   //partner
+            .attr("x", padding*30 + bbox.x+bbox.width)
+            .attr("y", padding+lineheight/2)
+            .attr("class","bold")
+            .text(function(d) {
+                return d.partnerId.naziv}
+        );
+        vinograd.append("text")   //sortaTekst
+            .attr("x", padding)
+            .attr("y", padding+lineheight*2)
+            .attr("dy",".32em")
+            .text("Sorte");
+        vinograd.selectAll("g")
+            .data(function(d) { return d.sorte; })
+            .enter().append("g")
+            .attr("transform", function (d, i) {
+                return "translate(" + i * (300+margin) + ",0)";
+            })
+            .call(function (s) {
+                s.append("text")   //sorta
+                    .attr("x", padding+sortaWidth)
+                    .attr("y", padding+lineheight*3)
+                    .attr("text-anchor", "middle")
+                    .attr("class","bold")
+                    .text(function(d) {return d.sortaId.naziv});
+                s.append("text")   //komada
+                    .attr("x", padding+sortaWidth)
+                    .attr("y", padding+lineheight*3+10)
+                    .attr("dy",".71em")
+                    .attr("class","bold")
+                    .text(function(d) {return d.komada});
+            });
+    }
+    control.width = function(value) {
+        if (!arguments.length) return width;
+        width = value;
+        return control;
+    };
+    control.height = function(value) {
+        if (!arguments.length) return height;
+        height = value;
+        return control;
+    };
+    return control;
+
+};
+V.Vinogradi = Marionette.ItemView.extend({
+    template: window.JST['/controls/loading.hbs'],
+    templatereal: window.JST['/vinogradi/vinogradi.hbs'],
+    initialize: function() {
+        var self = this;
+        this.vinogradiList = new V.VinogradList();
+        this.vinogradiList.fetch({success: function(list) {
+            self.tryRender();
+        }});
+    },
+    tryRender: function () {
+        this.template = this.templatereal;
+        this.realRender = true;
+        this.render();
+
+    },
+    onRender: function() {
+        this.$el.hide();
+        _.defer(_.bind(this.transitionIn_, this));
+        if (this.realRender) {
+            var vinogradiList = this.vinogradiList.toJSON();
+            this.d3(vinogradiList);
+        }
+    },
+    d3: function(vinogradiList) {
+            var canvasWidth = 800, canvasHeight = 400, canvasPadding = 20, margin = 10;
+        var canvas = d3.select(this.el).select("#vinogradi").append("svg")
+            .attr("width", canvasWidth).attr("height", canvasHeight);
+        var vinogradWidget = new V.VinogradWidget({canvasWidth: canvasWidth, canvasPadding: canvasPadding});
+        var vinogradWidth = vinogradWidget.width;
+        var vinogradHeight = vinogradWidget.height();
+
+        canvasHeight = vinogradiList.length * (vinogradHeight + margin);
+        canvas.attr("height", canvasHeight);
+        canvas.selectAll("g").data(vinogradiList)
+            .enter().append("g")
+            .attr("class", "vinograd-widget")
+            .attr("transform", function (d, i) {
+
+                return "translate("+canvasPadding+", " + i * (vinogradHeight+margin) + ")";
+            })
+            .call(vinogradWidget);
     }
 });
 

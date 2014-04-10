@@ -1,6 +1,6 @@
 V.CronoModel = Backbone.Model.extend({
 });
-V.CronoView  = Marionette.CollectionView.extend({
+V.CronoView = Marionette.CollectionView.extend({
     itemView: V.PreradaControl,
     initialize: function () {
         var a = 12;
@@ -19,7 +19,7 @@ V.MonthView = Marionette.CompositeView.extend({
     events: {
         'click .more': 'showMore'
     },
-    initialize: function() {
+    initialize: function () {
 //        moment.lang('hr');
 //        this.startDate = moment();
 //        this.currentDate = this.startDate;
@@ -32,7 +32,7 @@ V.MonthView = Marionette.CompositeView.extend({
 //        }
 //        this.collection = new Backbone.Collection(months);
     },
-    onRender: function() {
+    onRender: function () {
 //        this.$el.hide();
 //        _.defer(_.bind(this.transitionIn_, this))
 //        //        tjo
@@ -41,7 +41,7 @@ V.MonthView = Marionette.CompositeView.extend({
 //        this.$("#prerade").html(render);
         var el = this.el;
     },
-    showMore: function(e) {
+    showMore: function (e) {
         this.fillMonths();
     }
 });
@@ -52,10 +52,10 @@ V.FocusableRow = Backgrid.Row.extend({
         click: "rowFocused",
         focusout: "rowLostFocus"
     },
-    rowFocused: function() {
+    rowFocused: function () {
         this.el.style.backgroundColor = this.highlightColor;
     },
-    rowLostFocus: function() {
+    rowLostFocus: function () {
         delete this.el.style.backgroundColor;
     }
 });
@@ -63,144 +63,250 @@ V.FocusableRow = Backgrid.Row.extend({
 V.PartnerSelector = Marionette.ItemView.extend({
     template: window.JST['/controls/partnerSelector.hbs'],
     events: {
-        'click #modal-choose': 'choose'
+        'input #search': 'filter',
+        'click #selector-items li': 'choose'
     },
-    initialize: function() {
+    initialize: function () {
         this.partnerList = new V.PartnerList();
-        this.table = new Backgrid.Grid({
-            columns: [
-                {name: '', label: "", cell: 'select-row', editable: false, headerCell: 'select-all'},
-                {name: 'naziv', label: "Naziv", cell: 'string', editable: false}
-            ],
-            collection: this.partnerList
-        });
+//        this.table = new Backgrid.Grid({
+//            columns: [
+//                {name: '', label: "", cell: 'select-row', editable: false, headerCell: 'select-all'},
+//                {name: 'naziv', label: "Naziv", cell: 'string', editable: false}
+//            ],
+//            collection: this.partnerList
+//        });
     },
-    onRender: function() {
-        var render = this.table.render().el;
-        this.$("#table").append(render);
-        var filter = new Backgrid.Extension.ClientSideFilter({
-            collection: this.partnerList,
-            fields: ['naziv']
-        });
-        // Render the filter
-        this.$("#search-row").html(filter.render().el);
-        this.partnerList.fetch();
+    onRender: function () {
+//        var render = this.table.render().el;
+//        this.$("#table").append(render);
+//        var filter = new Backgrid.Extension.ClientSideFilter({
+//            collection: this.partnerList,
+//            fields: ['naziv']
+//        });
+//        // Render the filter
+//        this.$("#search-row").html(filter.render().el);
+
+        var self = this;
+        this.partnerList.fetch({success: function (list) {
+            self.d3(self.partnerList.toJSON());
+        }});
     },
-    choose: function() {
-        var selectedModels = this.table.getSelectedModels();
-        var model = selectedModels[0] || null;
+    d3: function (partnerList) {
+        var sorted = this.sorted = partnerList.sort(function (a, b) {
+            return a.naziv <= b.naziv ? -1 : 1;
+        });
+        var ul = this.ul = d3.select(this.el).select("#selector-items").append("ul").attr("class", "partneri");
+        ul.selectAll("li").data(sorted)
+            .enter().append("li")
+            .attr("data-id", function (d) {
+                return d.id
+            })
+            .html(function (d) {
+                return d.naziv
+            });
+    },
+    filter: function (e) {
+        var query = e.currentTarget.value.toLowerCase();
+        var filtered = this.sorted.filter(function (d) {
+            if (d.naziv.toLowerCase().indexOf(query) > -1) {
+                return true;
+            }
+        });
+        var li = this.ul.selectAll("li").data(filtered)
+            .attr("data-id", function (d) {
+                return d.id
+            })
+            .html(function (d) {
+                return d.naziv
+            });
+        li.enter().append("li")
+            .attr("data-id", function (d) {
+                return d.id
+            })
+            .html(function (d) {
+                return d.naziv
+            });
+        li.exit()
+            .attr("data-id", function (d) {
+                return d.id
+            })
+            .html(function (d) {
+                return d.naziv
+            })
+            .remove();
+    },
+    choose: function (e) {
+        var model = e.currentTarget.__data__;
         V.App.vent.trigger('partner:selected', model);
-        
+
     }
 });
 V.SortaSelector = Marionette.ItemView.extend({
     template: window.JST['/controls/sortaSelector.hbs'],
     events: {
-        'click #modal-choose': 'choose'
+        'input #search': 'filter',
+        'click #selector-items li': 'choose'
     },
-    initialize: function() {
-        this.sorteList = new V.SortaList();
+    initialize: function () {
 
-
-        this.table = new Backgrid.Grid({
-//            row: V.FocusableRow, // <-- Tell the Body class to use FocusableRow to render rows.
-            columns: [
-                {name: '', label: "", cell: 'select-row', editable: false, headerCell: 'select-all'},
-                {name: 'naziv', label: "Naziv", cell: 'string', editable: false},
-                {name: 'vrsta', label: "Vrsta", cell: 'string', editable: false}
-            ],
-            collection: this.sorteList
-        });
     },
-    onRender: function() {
-        var render = this.table.render().el;
-        this.$("#table").append(render);
-        // Initialize a client-side filter to filter on the client
-// mode pageable collection's cache.
-        var filter = new Backgrid.Extension.ClientSideFilter({
-            collection: this.sorteList,
-            fields: ['naziv']
-        });
-        // Render the filter
-        this.$("#search-row").html(filter.render().el);
-        this.sorteList.fetch();
+    onRender: function () {
+        var self = this;
+        var sortaList = new V.SortaList();
+        sortaList.fetch({success: function (list) {
+            self.d3(sortaList.toJSON());
+        }});
     },
-    choose: function() {
-        var selectedModels = this.table.getSelectedModels();
-        var model = selectedModels[0] || null;
+    d3: function (sortaList) {
+        var sorted = this.sorted = sortaList.sort(function (a, b) {
+            return a.naziv <= b.naziv ? -1 : 1;
+        });
+        var ul = this.ul = d3.select(this.el).select("#selector-items").append("ul").attr("class", "sorte");
+        ul.selectAll("li").data(sorted)
+            .enter().append("li")
+            .attr("data-id", function (d) {
+                return d.id
+            })
+            .html(function (d) {
+                return d.naziv
+            });
+    },
+    filter: function (e) {
+        var query = e.currentTarget.value.toLowerCase();
+        var filtered = this.sorted.filter(function (d) {
+            if (d.naziv.toLowerCase().indexOf(query) > -1) {
+                return true;
+            }
+        });
+        var li = this.ul.selectAll("li").data(filtered)
+            .attr("data-id", function (d) {
+                return d.id
+            })
+            .html(function (d) {
+                return d.naziv
+            });
+        li.enter().append("li")
+            .attr("data-id", function (d) {
+                return d.id
+            })
+            .html(function (d) {
+                return d.naziv
+            });
+        li.exit()
+            .attr("data-id", function (d) {
+                return d.id
+            })
+            .html(function (d) {
+                return d.naziv
+            })
+            .remove();
+    },
+    choose: function (e) {
+        var model = e.currentTarget.__data__;
         V.App.vent.trigger('sorta:selected', model);
-        
+
     }
 });
 V.VinogradSelector = Marionette.ItemView.extend({
     template: window.JST['/controls/vinogradSelector.hbs'],
     events: {
-        'click #modal-choose': 'choose'
+        'input #search': 'filter',
+        'click #selector-items li': 'choose'
     },
-    initialize: function() {
-        this.vinogradiList = new V.VinogradList();
-        this.table = new Backgrid.Grid({
-            columns: [
-                {name: '', label: "", cell: 'select-row', editable: false, headerCell: 'select-all'},
-                {name: 'polozaj', label: "Položaj", cell: 'string', editable: false}
+    initialize: function () {
 
-            ],
-            collection: this.vinogradiList
-        });
 
     },
-    onRender: function() {
-        var render = this.table.render().el;
-        this.$("#table").append(render);
-        var filter = new Backgrid.Extension.ClientSideFilter({
-            collection: this.vinogradiList,
-            fields: ['polozaj']
-        });
-        // Render the filter
-        this.$("#search-row").html(filter.render().el);
-        this.vinogradiList.fetch();
+    onRender: function () {
+        var self = this;
+        var vinogradList = new V.VinogradList();
+        vinogradList.fetch({success: function (list) {
+            self.d3(vinogradList.toJSON());
+        }});
     },
-    choose: function() {
-        var selectedModels = this.table.getSelectedModels();
-        var model = selectedModels[0] || null;
-        V.App.vent.trigger('vinograd:selected', model);
-        
+    d3: function (vinogradList) {
+        var sorted = this.sorted = vinogradList.sort(function (a, b) {
+            return a.polozaj <= b.polozaj ? -1 : 1;
+        });
+        var ul = this.ul = d3.select(this.el).select("#selector-items").append("ul").attr("class", "vinogradi");
+        ul.selectAll("li").data(sorted)
+            .enter().append("li")
+            .attr("data-id", function (d) {
+                return d.id
+            })
+            .html(function (d) {
+                return d.polozaj
+            });
+    },
+    filter: function (e) {
+        var query = e.currentTarget.value.toLowerCase();
+        var filtered = this.sorted.filter(function (d) {
+            if (d.polozaj.toLowerCase().indexOf(query) > -1) {
+                return true;
+            }
+        });
+        var li = this.ul.selectAll("li").data(filtered)
+            .attr("data-id", function (d) {
+                return d.id
+            })
+            .html(function (d) {
+                return d.polozaj
+            });
+        li.enter().append("li")
+            .attr("data-id", function (d) {
+                return d.id
+            })
+            .html(function (d) {
+                return d.polozaj
+            });
+        li.exit()
+            .attr("data-id", function (d) {
+                return d.id
+            })
+            .html(function (d) {
+                return d.polozaj
+            })
+            .remove();
+    },
+    choose: function (e) {
+        var selectedModel = e.currentTarget.__data__;
+        V.App.vent.trigger('vinograd:selected', selectedModel);
     }
 });
-V.PosudaControl = Marionette.ItemView.extend({
-    template: window.JST['/controls/posudaControl.hbs'],
-    initialize : function() {
-//                var model = this.model.toJSON();
-//        model.set('vrsta') this.get('vrsta');   //Postavljamo da li je vino, mošt, masulj, grožđe
-
-    },
-    onRender: function() {
-         var model = this.model.toJSON();
-          //Calculate fill
-        var stanje = model.stanje;
-        var volumen = model.volumen;
-        var popunjenost = Math.round((stanje / volumen) * 100);
-        var full = this.$('.full');
-        full.css('height', popunjenost + '%');
-        //Set wine color
-        var vrstaVina = model.sorta.vrsta;
-        if (vrstaVina === 'B') {
-            full.addClass('white');
-        } else if (vrstaVina === 'C') {
-            full.addClass('red');
-        }
-    }
-});
-function PosudaControl() {
-    var width = 200, height = 250, padding = 10, emptyHeight = height-padding* 2,
+//V.PosudaControl = Marionette.ItemView.extend({
+//    template: window.JST['/controls/posudaControl.hbs'],
+//    initialize : function() {
+////                var model = this.model.toJSON();
+////        model.set('vrsta') this.get('vrsta');   //Postavljamo da li je vino, mošt, masulj, grožđe
+//
+//    },
+//    onRender: function() {
+//         var model = this.model.toJSON();
+//          //Calculate fill
+//        var stanje = model.stanje;
+//        var volumen = model.volumen;
+//        var popunjenost = Math.round((stanje / volumen) * 100);
+//        var full = this.$('.full');
+//        full.css('height', popunjenost + '%');
+//        //Set wine color
+//        var vrstaVina = model.sorta.vrsta;
+//        if (vrstaVina === 'B') {
+//            full.addClass('white');
+//        } else if (vrstaVina === 'C') {
+//            full.addClass('red');
+//        }
+//    }
+//});
+V.PosudaControl = function () {
+    var width = 200, height = 250, padding = 10, emptyHeight = height - padding * 2,
         emptyWidth = 40;
 
     function control(posuda) {
-        posuda.on("mouseover", function() {
-            d3.select(this).select(".box").classed("selected",true)
+        posuda.on("mouseover",function () {
+            d3.select(this).select(".box").classed("selected", true)
             ;
-        }).on("mouseout", function() {
-                d3.select(this).select(".box").classed("selected",false)
+        }).on("mouseout", function () {
+                d3.select(this).select(".box").classed("selected", false)
             });
         posuda.append("rect")
             .attr("width", width)
@@ -226,61 +332,131 @@ function PosudaControl() {
             .attr('y', 90)
             .attr("class", "volumen");
         posuda.append("text")
-            .text(function(d) {return d.stanje;})
+            .text(function (d) {
+                return d.stanje;
+            })
             .attr("x", padding)
             .attr("y", 150)
             .attr("class", "stanje");
         posuda.append("text")
-            .text(function(d) {return d.volumen;})
+            .text(function (d) {
+                return d.volumen;
+            })
             .attr("x", padding)
             .attr("y", 200)
             .attr("class", "volumen");
         posuda.append("rect")
-            .attr("style","fill: #EBEBEB;")
+            .attr("style", "fill: #EBEBEB;")
             .attr("width", 40)
             .attr("height", emptyHeight)
-            .attr("x", width-padding-emptyWidth)
+            .attr("x", width - padding - emptyWidth)
             .attr("y", padding);
 
 
         posuda.append("rect")
-            .attr("class",function(d) {return d.boja})
+            .attr("class", function (d) {
+                return d.boja
+            })
             .attr("width", emptyWidth)
-            .attr("height", function(d) {
-                var fullHeight = d.stanje/ d.volumen * emptyHeight;
+            .attr("height", function (d) {
+                var fullHeight = d.stanje / d.volumen * emptyHeight;
                 if (fullHeight > emptyHeight) {
                     fullHeight = emptyHeight
                 }
                 return fullHeight;
             })
-            .attr("x", width-padding-emptyWidth)
-            .attr("y", function(d) {
-                var fullHeight = d.stanje/ d.volumen * emptyHeight;
+            .attr("x", width - padding - emptyWidth)
+            .attr("y", function (d) {
+                var fullHeight = d.stanje / d.volumen * emptyHeight;
                 if (fullHeight > emptyHeight) {
                     fullHeight = emptyHeight
                 }
                 return padding + emptyHeight - fullHeight;
-            } );
+            });
     }
-    control.width = function(value) {
+
+    control.width = function (value) {
         if (!arguments.length) return width;
         width = value;
         return control;
     };
-    control.height = function(value) {
+    control.height = function (value) {
         if (!arguments.length) return height;
         height = value;
         return control;
     };
     return control;
 
-}
-V.NalogControl = Marionette.ItemView.extend({
-    template: window.JST['/controls/nalogControl.hbs'],
-    initialize : function() {
+};
+//V.NalogControl = Marionette.ItemView.extend({
+//    template: window.JST['/controls/nalogControl.hbs'],
+//    initialize: function () {
+//
+//    }
+//});
+V.NalogControl = function () {
+    var width = 250, height = 150, padding = 10, margin = 10, lineheight = 22;
+
+
+    function control(nalog) {
+        nalog.on("mouseover",function () {
+            d3.select(this).select(".box").classed("selected", true)
+            ;
+        }).on("mouseout", function () {
+                d3.select(this).select(".box").classed("selected", false)
+            });
+        nalog.append("rect")
+            .attr("width", width)
+            .attr("height", height)
+            .attr("class", "box");
+        var primkaText = nalog.append("text")  //broj
+            .attr("x", padding)
+            .attr("y", padding)
+            .attr("dy", ".71em")
+            .attr("class", "subtitle")
+            .text(function (d) {
+                return d.broj
+            });
+        nalog.append("text")   //datum
+            .attr("x", width - padding)
+            .attr("y", padding)
+            .attr("dy", ".71em")
+            .attr("class", "subtitle")
+            .attr("text-anchor", "end")
+            .text(function (d) {
+                return moment(d.datumIzvrsenja).format('DD.MM.YYYY')
+            });
+        nalog.append("rect")  //titleContainer
+            .attr("x", padding)
+            .attr("y", padding + lineheight)
+            .attr("width", width - padding * 2)
+            .attr("height", lineheight * 2)
+            .attr("fill", "#BBDDE9");
+        nalog.append("text")   //vrsta
+            .attr("x", width / 2)
+            .attr("y", padding + lineheight * 2)
+            .attr("dy", ".35em")
+            .attr("text-anchor", "middle")
+            .attr("class", "title")
+            .text(function (d) {
+                return d.nalogVrsta
+            });
 
     }
-});
+
+    control.width = function (value) {
+        if (!arguments.length) return width;
+        width = value;
+        return control;
+    };
+    control.height = function (value) {
+        if (!arguments.length) return height;
+        height = value;
+        return control;
+    };
+    return control;
+
+};
 V.NalogListView = Marionette.CollectionView.extend({
     itemView: V.NalogControl,
     initialize: function () {
@@ -293,369 +469,338 @@ V.NalogListView = Marionette.CollectionView.extend({
     }
 });
 V.NalogVrsta = Marionette.CompositeView.extend({
-   template: window.JST['/controls/nalogVrsta.hbs'],
+    template: window.JST['/controls/nalogVrsta.hbs'],
     itemView: V.NalogControl,
     itemViewContainer: '.nalozi',
-    initialize : function() {
+    initialize: function () {
         var vrstaKey = 'VRSTA_' + this.model.get('vrsta');
         this.model.set('vrsta', V.Lang[vrstaKey]);
 
     }
 });
+V.RadnjaAnaliza = function () {
+    var width = 500, height = 250, padding = 10;
+
+    function control(radnja) {
+        radnja.append("text")
+            .text(function (d) {
+                return d.rb;
+            })
+            .attr('x', padding)
+            .attr('y', 30);
+        radnja.append("text")
+            .text(function (d) {
+                return d.tip;
+            })
+            .attr('x', padding + 30)
+            .attr('y', 30);
+        radnja.append("text")
+            .text(function (d) {
+                return d.posuda1.oznaka;
+            })
+            .attr('x', padding + 130)
+            .attr('y', 30);
+        radnja.append("text")
+            .text(function (d) {
+                return d.parametar.naziv;
+            })
+            .attr('x', padding + 180)
+            .attr('y', 30);
+        radnja.append("text")
+            .text(function (d) {
+                return d.kolicina;
+            })
+            .attr('x', padding + 300)
+            .attr('y', 30);
+        radnja.append("text")
+            .text(function (d) {
+                return d.parametar.jedinica;
+            })
+            .attr('x', padding + 350)
+            .attr('y', 30);
+
+    }
+
+    control.width = function (value) {
+        if (!arguments.length) return width;
+        width = value;
+        return control;
+    };
+    control.height = function (value) {
+        if (!arguments.length) return height;
+        height = value;
+        return control;
+    };
+    return control;
+};
+V.RadnjaPretok = function () {
+    var width = 500, height = 250, padding = 10;
+
+    function control(radnja) {
+        radnja.append("text")
+            .text(function (d) {
+                return d.rb;
+            })
+            .attr('x', padding)
+            .attr('y', 30);
+        radnja.append("text")
+            .text(function (d) {
+                return d.tip;
+            })
+            .attr('x', padding + 30)
+            .attr('y', 30);
+        radnja.append("text")
+            .text(function (d) {
+                if (typeof d.posuda1 !== 'undefined' && d.posuda1 !== null) {
+                    return d.posuda1.oznaka;
+                }
+                return '';
+            })
+            .attr('x', padding + 130)
+            .attr('y', 30);
+        radnja.append("text")
+            .text(function (d) {
+                if (typeof d.posuda2 !== 'undefined' && d.posuda2 !== null) {
+                    return d.posuda2.oznaka;
+                }
+                return '';
+            })
+            .attr('x', padding + 230)
+            .attr('y', 30);
+        radnja.append("text")
+            .text(function (d) {
+                return d.kolicina;
+            })
+            .attr('x', padding + 300)
+            .attr('y', 30);
+    }
+
+    control.width = function (value) {
+        if (!arguments.length) return width;
+        width = value;
+        return control;
+    };
+    control.height = function (value) {
+        if (!arguments.length) return height;
+        height = value;
+        return control;
+    };
+    return control;
+};
+V.RadnjaMuljanje = function () {
+    var width = 500, height = 250, padding = 10;
+
+    function control(radnja) {
+        radnja.append("text")
+            .text(function (d) {
+                return d.rb;
+            })
+            .attr('x', padding)
+            .attr('y', 30);
+        radnja.append("text")
+            .text(function (d) {
+                return d.tip;
+            })
+            .attr('x', padding + 30)
+            .attr('y', 30);
+
+    }
+
+    control.width = function (value) {
+        if (!arguments.length) return width;
+        width = value;
+        return control;
+    };
+    control.height = function (value) {
+        if (!arguments.length) return height;
+        height = value;
+        return control;
+    };
+    return control;
+};
+V.RadnjaPresanje = function () {
+    var width = 500, height = 250, padding = 10;
+
+    function control(radnja) {
+        radnja.append("text")
+            .text(function (d) {
+                return d.rb;
+            })
+            .attr('x', padding)
+            .attr('y', 30);
+        radnja.append("text")
+            .text(function (d) {
+                return d.tip;
+            })
+            .attr('x', padding + 30)
+            .attr('y', 30);
+
+    }
+
+    control.width = function (value) {
+        if (!arguments.length) return width;
+        width = value;
+        return control;
+    };
+    control.height = function (value) {
+        if (!arguments.length) return height;
+        height = value;
+        return control;
+    };
+    return control;
+};
 V.NalogDialog = Marionette.ItemView.extend({
     template: window.JST['/controls/loading.hbs'],
     templatereal: window.JST['/controls/nalogDialog.hbs'],
+    controls: {
+        'ANALIZA': V.RadnjaAnaliza(),
+        'PRETOK': V.RadnjaPretok(),
+        'MULJANJE': V.RadnjaMuljanje(),
+        'PRESANJE': V.RadnjaPresanje()
+    },
     events: {
         'click #modal-choose': 'choose'
     },
-    initialize: function() {
+    initialize: function () {
         var self = this;
-        this.model.fetch({success: function() {
-            self.tryRender();
+        this.model.fetch({success: function (model) {
+            var radnje = self.model.get('radnje');
+            var promises = [];
+            for (var i = 0, j = radnje.length; i < j; ++i) {
+                var radnja = radnje[i];
+                promises.push(self.fetchData(radnja));
+
+            }
+            Q.all(promises).then(function () {
+                self.tryRender();
+            });
+
         }})
 
     },
-    tryRender : function() {
+    fetchData: function (radnja) {
+        var deferred = Q.defer();
+        var promises = [];
+        if (typeof radnja.posuda1 !== 'undefined' && radnja.posuda1 !== null) {
+            var posuda1 = new V.Posuda({id: radnja.posuda1});
+
+            promises.push(posuda1.getModel());
+            promises[promises.length - 1].then(function (result) {
+                radnja.posuda1 = result.toJSON();
+            });
+        }
+
+        if (typeof radnja.posuda2 !== 'undefined' && radnja.posuda2 !== null) {
+            var posuda2 = new V.Posuda({id: radnja.posuda2});
+
+            promises.push(posuda2.getModel());
+            promises[promises.length - 1].then(function (result) {
+                radnja.posuda2 = result.toJSON();
+            });
+        }
+
+        if (typeof radnja.parametar !== 'undefined' && radnja.parametar !== null) {
+            var parametar = new V.Parametar({id: radnja.parametar});
+
+            promises.push(parametar.getModel());
+            promises[promises.length - 1].then(function (result) {
+                radnja.parametar = result.toJSON();
+            });
+        }
+
+
+        return promises;
+    },
+    tryRender: function () {
         this.template = this.templatereal;
         this.realRender = true;
         this.render();
     },
-    onRender: function() {
+    onRender: function () {
+        if (this.realRender) {
+            this.d3(this.model.get('radnje'));
+        }
+    },
+    d3: function (radnje) {
+        var self = this;
+//        var containerWidth = this.$("#radnje").width();
+        var containerWidth = "100%";
+        var canvasWidth = containerWidth, canvasHeight = radnje.length * 100, canvasPadding = 20, margin = 10;
+        var canvas = this.canvas = d3.select(this.el).select("#radnje").append("svg")
+            .attr("width", containerWidth).attr("height", canvasHeight);
+
+        var radnja = canvas.selectAll("g").data(radnje)
+            .enter().append("g")
+            .attr("class", "radnja")
+            .attr("transform", function (d, i) {
+
+                return "translate(0," + i * (50 + margin) + ")";
+
+            });
+
+        canvas.selectAll(".radnja").each(function(d) {
+            var tip = d.tip;
+            var control = self.controls[tip];
+            d3.select(this).append("g").attr("class",tip)
+                .call(control);
+        });
+
 
     },
-    choose: function() {
+    choose: function () {
 
 
     }
 });
-V.RadnjaControl = Marionette.ItemView.extend({
-    template: window.JST['/controls/loading.hbs'],
-    templatereal: window.JST['/controls/nalogDialog.hbs'],
-    initialize: function() {
 
-    }
-});
+V.SredstvoAction = function() {
+    var text = 'Sredstvo';
+    function control() {
 
-/////**
-// * Kronološki pregled po mjesecima
-// * @type @exp;Y@pro;Base@call;create
-// */
-//Y.CronoView = Y.Base.create('cronoView', Y.View, [], {
-//    template: 'cronoView',
-//    resources: Y.Intl.get("controls"),
-//    events: {
-//        '.more': {click: 'showMore'}
-//    },
-//    initializer: function() {
-//        moment.lang('hr');
-//        this.startDate = moment();
-//        this.currentDate = this.startDate;
-//    },
-//    render: function() {
-//
-//
-//        this.fillMonths();
-//        return this;
-//    },
-//    showMore: function(e) {
-//        this.fillMonths();
-//    },
-//    fillMonths: function() {
-//        var moreLink = Y.one('.more');
-//        if (moreLink) {
-//            moreLink.remove(true);
-//        }
-//        var template = Handlebars.templates[this.template];
-//        var output = [];
-//        this.preradaList = this.get('model');
-//        for (var i = 0; i < 6; ++i) {
-////            var preradaControl = new Y.PreradaControl();
-////            var control = preradaControl.render().get('container'),
-//            content = [];
-//            //Filtriraj modele po mjesecima
-//            if (this.preradaList) {
-//                var filteredPrerade = this.preradaList.fromMonth(this.currentDate.month(), this.currentDate.year());
-//                for (var x = 0, y = filteredPrerade.length; x < y; ++x) {
-//                    var preradaControl = new Y.PreradaControl({model: filteredPrerade[x]});
-//                    var control = preradaControl.render().get('container').getHTML();
-//                    content.push({item: control});
-//                }
-//            }
-////            filteredPrerade.each(function(model) {
-////
-////                var preradaControl = new Y.PreradaControl({model: model});
-////                var control = preradaControl.render().get('container').getHTML();
-////                content.push({item: control});
-////            });
-////                var data = {title: this.currentDate.format('MMMM YYYY'), content: [{item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()},
-////                {item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()},
-////                {item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()},
-////                {item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()},
-////                {item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()},
-////                {item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()},
-////                {item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()},
-////                {item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()},
-////                {item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()}
-////                ]};
-//            var data = {};
-//            data.title = this.currentDate.format('MMMM YYYY');
-//            data.content = content;
-//            output.push(template(data));
-//            this.currentDate.subtract('months', 1);
-//        }
-//        output.push('<a href="#" class="more" onclick="return false;">More</a>');
-//        output = output.join('');
-//        var node = Y.Node.create(output);
-//        this.get('container').append(node);
-//        this.attachEvents();
-//    }
-//
-//}, {
-//// Specify attributes and static properties for your View here.
-//
-//    ATTRS: {
-//// Override the default container attribute.
-//        container: {
-//            valueFn: function() {
-//                return Y.Node.create('<div class="crono"/>');
-//            }
-//        }
-//    }
-//});
-///**
-// * Popis vina po sorti
-// * @type @exp;Y@pro;Base@call;create
-// */
-//Y.SortaView = Y.Base.create('sortaView', Y.View, [], {
-//    template: 'sortaView',
-//    resources: Y.Intl.get("controls"),
-//    initializer: function() {
-//        moment.lang('hr');
-//        this.startDate = moment();
-//        this.currentDate = this.startDate;
-////        var vrsta = this.get('vrsta');
-//    },
-//    render: function() {
-//        var posudaList = this.get('model');
-//        var sortaContainer = {};
-//        var sorte = [];
-//        var vrsta = this.get('vrsta');
-//        if (posudaList) {
-//            posudaList.each(function(model) {
-//                var json = model.toJSON();
-//                var currentSorta = json.sorta.id;
-//                if (typeof sortaContainer[currentSorta] === 'undefined') {
-//                    sortaContainer[currentSorta] = {};
-//                    sortaContainer[currentSorta].title = json.sorta.naziv;
-//                    sortaContainer[currentSorta].content = [];
-//                    sorte.push(sortaContainer[currentSorta]);
-//                }
-//                var posudaControl = new Y.PosudaControl({model: model, vrsta: vrsta});
-//                var control = posudaControl.render().get('container').getHTML();
-//                sortaContainer[currentSorta].content.push({item: control});
-//            });
-////        var data = {sorta: [{title: 'Škrlet', content: [{item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()}]},
-////                {title: 'Graševina', content: [{item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()}]},
-////                {title: 'Cabernet Sauvignon', content: [{item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()}]},
-////                {title: 'Pinot crni', content: [{item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()}, {item: control.getHTML()}]}
-////            ]};
-//        }
-//        var data = {};
-//        data.sorta = sorte;
-//        var template = Handlebars.templates[this.template];
-//        var output = template(data);
-////        var node = Y.Node.create(output);
-//        this.get('container').append(output);
-//        return this;
-//    }
-//}, {
-//    // Specify attributes and static properties for your View here.
-//
-//    ATTRS: {
-//        // Override the default container attribute.
-//        container: {
-//            valueFn: function() {
-//                return Y.Node.create('<div class="sorta"/>');
-//            }
-//        },
-//        //Vino, mošt, masulj, grožđe
-//        vrsta: {}
-//    }
-//});
-//Y.PosudaControl = Y.Base.create('PosudaControl', Y.View, [], {
-//    template: 'posudaControl',
-//    initializer: function() {
-//
-//    },
-//    render: function() {
-//        var model = this.get('model').toJSON();
-//        model.vrsta = this.get('vrsta');   //Postavljamo da li je vino, mošt, masulj, grožđe
-//        var template = Handlebars.templates[this.template];
-//        this.get('container').setHTML(template(model));
-//        //Calculate fill
-//        var stanje = model.stanje;
-//        var volumen = model.volumen;
-//        var popunjenost = Math.round((stanje / volumen) * 100);
-//        var full = this.get('container').one('.full');
-//        full.setStyle('height', popunjenost + '%');
-//        //Set wine color
-//        var vrstaVina = model.sorta.vrsta;
-//        if (vrstaVina === 'B') {
-//            full.addClass('white');
-//        } else if (vrstaVina === 'C') {
-//            full.addClass('red');
-//        }
-//        return this;
-//    }
-//
-//
-//}, {
-//    ATTRS: {
-//        vrsta: {}
-//    }
-//});
-//
-//Y.NalogControl = Y.Base.create('NalogControl', Y.View, [], {
-//    template: 'nalogControl',
-//    initializer: function() {
-//
-//    },
-//    render: function() {
-//        var template = Handlebars.templates['nalogControl'];
-//        this.get('container').setHTML(template(this.get('model').toJSON()));
-//        return this;
-//    }
-//});
-//
-//var animations = {}, /* Animation rules keyed by their name */
-//		div = '<div>',
-//		Node = Y.Node;
-//var Spinner = Y.Base.create('Spinner', Y.Widget, [], {
-//    initializer: function() {
-//        this.get('contentBox').setStyles({position: 'relative'}).setAttribute('aria-role', 'progressbar');
-//    },
-//    render: function() {
-//        this._lines();
-//    },
-//    _lines: function() {
-//        var seg,
-//                el = this.get('contentBox'),
-//                i = 0,
-//                pre = this._getVendorPrefix(),
-//                color = this.get('color'),
-//                length = this.get('length'),
-//                lines = this.get('lines'),
-//                opacity = this.get('opacity'),
-//                radius = this.get('radius'),
-//                speed = this.get('speed'),
-//                trail = this.get('trail'),
-//                width = this.get('width');
-//
-//
-//        for (; i < lines; i++) {
-//
-//            seg = Node.create(div).setStyles({
-//                position: 'absolute',
-//                top: 1 + ~(width / 2) + 'px',
-//                transform: 'translate3d(0,0,0)',
-//                opacity: opacity
-//            });
-//
-//            seg.setStyle(pre + 'animation', this._addAnimation(opacity, trail, i, lines) + ' ' + 1 / speed + 's linear infinite');
-//            seg.appendChild(this._fill(i, length, width, color, lines, radius));
-//            el.appendChild(seg);
-//        }
-//    },
-//    _fill: function(i, length, width, color, lines, radius) {
-//
-//        var node = Node.create(div).setStyles({
-//            position: 'absolute',
-//            width: (length + width) + 'px',
-//            height: width + 'px',
-//            background: color,
-//            boxShadow: '0 0 1px rgba(0,0,0,.1)',
-//            transformOrigin: 'left',
-//            transform: 'rotate(' + ~~(360 / lines * i) + 'deg) translate(' + radius + 'px' + ',0)',
-//            borderRadius: (width >> 1) + 'px'
-//        });
-//
-//        return node;
-//    },
-//    _getVendorPrefix: function() {
-//        var pre;
-//
-//        if (Y.UA.webkit) {
-//            pre = '-webkit-';
-//        }
-//        else if (Y.UA.opera) {
-//            pre = '-o-';
-//        }
-//        else if (Y.UA.gecko) {
-//            pre = '-moz-';
-//        }
-//        else {
-//            pre = '-ms-';
-//        }
-//
-//        return pre;
-//    },
-//    _addAnimation: function(alpha, trail, i, lines) {
-//        var name = ['opacity', trail, ~~(alpha * 100), i, lines].join('-'),
-//                start = 0.01 + i / lines * 100,
-//                z = Math.max(1 - (1 - alpha) / trail * (100 - start), alpha),
-//                pre = this._getVendorPrefix();
-//
-//        if (!animations[name]) {
-//            var css =
-//                    '@' + pre + 'keyframes ' + name + '{' +
-//                    '0%{opacity:' + z + '}' +
-//                    start + '%{opacity:' + alpha + '}' +
-//                    (start + 0.01) + '%{opacity:1}' +
-//                    (start + trail) % 100 + '%{opacity:' + alpha + '}' +
-//                    '100%{opacity:' + z + '}' +
-//                    '}';
-//            Y.StyleSheet(css);
-//            animations[name] = 1;
-//        }
-//
-//        return name;
-//    }
-//},
-//{
-//    ATTRS: {
-//        // The number of lines to draw
-//        lines: {
-//            value: 12
-//        },
-//        // The length of each line
-//        length: {
-//            value: 7
-//        },
-//        // The line thickness
-//        width: {
-//            value: 4
-//        },
-//        // The radius of the inner circle
-//        radius: {
-//            value: 15
-//        },
-//        // #rgb or #rrggbb
-//        color: {
-//            value: '#666'
-//        },
-//        // Rounds per second
-//        speed: {
-//            value: 1
-//        },
-//        // Afterglow percentage
-//        trail: {
-//            value: 100
-//        },
-//        // Opacity of the trail
-//        opacity: {
-//            value: 0.25
-//        }
-//    }
-//});
-//
-//Y.Spinner = Spinner;
+    };
+    control.text = function (value) {
+        if (!arguments.length) return text;
+        text = value;
+        return control;
+    };
+    control.action = function() {
+        alert('Dodajem sredstvo');
+        d3.event.preventDefault();
+    };
+
+    return control;
+};
+V.AnalizaAction = function() {
+    var text = 'Analiza';
+    function control() {
+
+    };
+    control.text = function (value) {
+        if (!arguments.length) return text;
+        text = value;
+        return control;
+    };
+    control.action = function() {
+        alert('Radim analizu');
+        d3.event.preventDefault();
+    };
+
+    return control;
+};
+V.PretokAction = function() {
+    var text = 'Pretok';
+    function control() {
+
+    };
+    control.text = function (value) {
+        if (!arguments.length) return text;
+        text = value;
+        return control;
+    };
+    control.action = function() {
+        alert('Radim pretok');
+        d3.event.preventDefault();
+    };
+
+    return control;
+};
