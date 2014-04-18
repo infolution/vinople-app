@@ -1,0 +1,958 @@
+'use strict';
+//V - Vinople
+var V = V || {};
+V.VinopleSchema = {
+    "version": "1",
+    "datastore": "Vinople",
+    "objectstores": [
+        {"storename": "Artikl"},
+        {"storename": "ArtiklStanje"},
+        {"storename": "Doziranje"},
+        {"storename": "Dozvola"},
+        {"storename": "Grozde"},
+        {"storename": "GrozdeCombo"},
+        {"storename": "Grupa"},
+        {"storename": "Izdatnica"},
+        {"storename": "Kakvoca"},
+        {"storename": "LoginUser"},
+        {"storename": "Lokacija"},
+        {"storename": "Lot"},
+        {"storename": "LotRepromaterijal"},
+        {"storename": "LotSljedivost"},
+        {"storename": "LotStavka"},
+        {"storename": "Masulj"},
+        {"storename": "MasuljCombo"},
+        {"storename": "Most"},
+        {"storename": "MostCombo"},
+        {"storename": "Nalog"},
+        {"storename": "Parametar"},
+        {"storename": "Partner"},
+        {"storename": "Plan"},
+        {"storename": "PlanLicense"},
+        {"storename": "Posuda"},
+        {"storename": "PosudaSekcija"},
+        {"storename": "PovratStavka"},
+        {"storename": "Povratnica"},
+        {"storename": "Prerada"},
+        {"storename": "PreradaNalog"},
+        {"storename": "PrimjenaSredstvo"},
+        {"storename": "Primka"},
+        {"storename": "Proizvod"},
+        {"storename": "Proizvodac"},
+        {"storename": "Radnja"},
+        {"storename": "Sekcija"},
+        {"storename": "Sorta"},
+        {"storename": "SortaVinograd"},
+        {"storename": "Sredstvo"},
+        {"storename": "Stanje"},
+        {"storename": "Stavka"},
+        {"storename": "Stopa"},
+        {"storename": "Trosak"},
+        {"storename": "Uloga"},
+        {"storename": "UlogaDozvola"},
+        {"storename": "User"},
+        {"storename": "UserPlan"},
+        {"storename": "Vino"},
+        {"storename": "VinoCombo"},
+        {"storename": "Vinograd"},
+        {"storename": "Vrsta"}
+    ]
+};
+V.Artikl = Backbone.Model.extend({
+    root: 'Artikl',
+    url: 'artikl',
+    defaults: {
+        sifra: {},
+        naziv: {},
+        proizvodac: {},
+        grupaId: {},
+        proizvodacId: {},
+        jm: {},
+        napomena: {},
+        stanje: {},
+        proizvodId: {},
+        godina: {},
+        kapacitet: {},
+        pakiranje: {},
+        userId: {},
+        lokacijaStanjeMap: {}
+    }
+});
+V.ArtiklList = Backbone.Collection.extend({
+    model: V.Artikl,
+    url: 'artikl'
+
+
+});
+V.ArtiklStanje = Backbone.Model.extend({
+    root: 'ArtiklStanje',
+    url: 'artiklstanje',
+    defaults: {
+        artiklId: {},
+        kolicina: {},
+        stanje: {},
+        primkaId: {},
+        nalogId: {},
+        izdatnicaId: {},
+        povratnicaId: {},
+        datum: {},
+        sekcijaId: {},
+        sekcija: {},
+        userId: {}
+    }
+});
+V.ArtiklStanjeList = Backbone.Collection.extend({
+    model: V.ArtiklStanje,
+    url: 'artiklstanje'
+
+});
+V.Doziranje = Backbone.Model.extend({
+    root: 'Doziranje',
+    url: 'doziranje',
+    defaults: {
+        value: {},
+        unit: {}
+    }
+});
+V.DoziranjeList = Backbone.Collection.extend({
+    model: V.Doziranje,
+    url: 'doziranje'
+
+});
+V.Dozvola = Backbone.Model.extend({
+    root: 'Dozvola',
+    url: 'dozvola',
+    defaults: {
+        naziv: {},
+        userId: {}
+    }
+});
+V.DozvolaList = Backbone.Collection.extend({
+    model: V.Dozvola,
+    url: 'dozvola'
+
+});
+V.Grozde = Backbone.Model.extend({
+    root: 'Grozde',
+    url: 'grozde',
+    defaults: {
+        godina: {},
+        preradaId: {},
+        sortaId: {},
+        vinogradId: {},
+        primkaId: {},
+        primkaStavkaId: {},
+        userId: {}
+    }
+});
+V.GrozdeList = Backbone.Collection.extend({
+    model: V.Grozde,
+    url: 'grozde'
+
+});
+V.GrozdeCombo = Backbone.Model.extend({
+    root: 'GrozdeCombo',
+    url: 'grozdecombo',
+    defaults: {
+        grozdeId: {},
+        parentId: {},
+        udio: {},
+        userId: {},
+        sortaNaziv: {}
+    }
+});
+V.GrozdeComboList = Backbone.Collection.extend({
+    model: V.GrozdeCombo,
+    url: 'grozdecombo'
+
+});
+V.Grupa = Backbone.Model.extend({
+    root: 'Grupa',
+    url: 'grupa',
+    defaults: {
+        naziv: {},
+        parent: {},
+        shortName: {},
+        container: {value: false}
+    }
+});
+V.GrupaList = Backbone.Collection.extend({
+    model: V.Grupa,
+    url: 'grupa'
+
+});
+V.Izdatnica = Backbone.Model.extend({
+    root: 'Izdatnica',
+    url: 'izdatnica',
+    defaults: {
+        datum: {},
+        partnerId: {},
+        napomena: {},
+        broj: {}
+    }
+});
+V.IzdatnicaList = Backbone.Collection.extend({
+    model: V.Izdatnica,
+    url: 'izdatnica'
+
+});
+V.Kakvoca = Backbone.Model.extend({
+    root: 'Kakvoca',
+    url: 'kakvoca',
+    defaults: {
+        naziv: {},
+        kratkiNaziv: {},
+        kratica: {}
+    }
+});
+V.KakvocaList = Backbone.Collection.extend({
+    model: V.Kakvoca,
+    url: 'kakvoca'
+
+});
+V.LoginUser = Backbone.Model.extend({
+    root: 'LoginUser',
+    url: 'loginuser',
+    defaults: {
+        userId: {},
+        fullName: {},
+        email: {},
+        username: {},
+        active: {}
+    }
+});
+V.LoginUserList = Backbone.Collection.extend({
+    model: V.LoginUser,
+    url: 'loginuser',
+    root: 'LoginUser'
+
+});
+V.Lokacija = Backbone.Model.extend({
+    root: 'Lokacija',
+    url: 'lokacija',
+    defaults: {
+        naziv: {},
+        adresa: {},
+        postBroj: {},
+        mjesto: {},
+        sekcije: {},
+        napomena: {}
+    }
+});
+V.LokacijaList = Backbone.Collection.extend({
+    model: V.Lokacija,
+    url: 'lokacija'
+
+});
+V.Lot = Backbone.Model.extend({
+    root: 'Lot',
+    url: 'lot',
+    defaults: {
+        broj: {},
+        lokacijaId: {},
+        posude: {},
+        napomena: {},
+        nalogId: {},
+        kolicina: {},
+        datumIzvrsenja: {},
+        tip: {}
+    }
+});
+V.LotList = Backbone.Collection.extend({
+    model: V.Lot,
+    url: 'lot'
+
+});
+V.LotRepromaterijal = Backbone.Model.extend({
+    root: 'LotRepromaterijal',
+    url: 'lotrepromaterijal',
+    defaults: {
+        grupaNaziv: {},
+        container: {},
+        kolicina: {},
+        artiklNaziv: {},
+        artiklId: {}
+    }
+});
+V.LotRepromaterijalList = Backbone.Collection.extend({
+    model: V.LotRepromaterijal,
+    url: 'lotrepromaterijal'
+
+});
+V.LotSljedivost = Backbone.Model.extend({
+    root: 'LotSljedivost',
+    url: 'lotsljedivost',
+    defaults: {
+        lotBroj: {},
+        posudeOznaka: {},
+        partnerNaziv: {}
+    }
+});
+V.LotSljedivostList = Backbone.Collection.extend({
+    model: V.LotSljedivost,
+    url: 'lotsljedivost'
+
+});
+V.LotStavka = Backbone.Model.extend({
+    root: 'LotStavka',
+    url: 'lotstavka',
+    defaults: {
+        lotId: {},
+        posudaId: {},
+        stavkaId: {},
+        nalogId: {},
+        userId: {}
+    }
+});
+V.LotStavkaList = Backbone.Collection.extend({
+    model: V.LotStavka,
+    url: 'lotstavka'
+
+});
+V.Masulj = Backbone.Model.extend({
+    root: 'Masulj',
+    url: 'masulj',
+    defaults: {
+        godina: {},
+        preradaId: {},
+        sortaId: {},
+        vrijemeNastanka: {},
+        grozdeId: {},
+        combo: {},
+        combos: {},
+        napomena: {},
+        userId: {}
+    }
+});
+V.MasuljList = Backbone.Collection.extend({
+    model: V.Masulj,
+    url: 'masulj'
+
+});
+V.MasuljCombo = Backbone.Model.extend({
+    root: 'MasuljCombo',
+    url: 'masuljcombo',
+    defaults: {
+        masuljId: {},
+        parentId: {},
+        udio: {},
+        userId: {}
+    }
+});
+V.MasuljComboList = Backbone.Collection.extend({
+    model: V.MasuljCombo,
+    url: 'masuljcombo'
+
+});
+V.Most = Backbone.Model.extend({
+    root: 'Most',
+    url: 'most',
+    defaults: {
+        godina: {},
+        preradaId: {},
+        sortaId: {},
+        stanje: {},
+        masuljId: {},
+        grozdeId: {},
+        vrijemeNastanka: {},
+        combo: {},
+        combos: {},
+        napomena: {},
+        userId: {}
+    }
+});
+V.MostList = Backbone.Collection.extend({
+    model: V.Most,
+    url: 'most'
+
+});
+V.MostCombo = Backbone.Model.extend({
+    root: 'MostCombo',
+    url: 'mostcombo',
+    defaults: {
+        mostId: {},
+        parentId: {},
+        udio: {},
+        userId: {},
+        sortaNaziv: {}
+    }
+});
+V.MostComboList = Backbone.Collection.extend({
+    model: V.MostCombo,
+    url: 'mostcombo'
+
+});
+V.Nalog = Backbone.Model.extend({
+    root: 'Nalog',
+    url: 'nalog',
+    defaults: {
+        datumIzvrsenja: {},
+        datumZadavanja: {},
+        potvrdeno: {},
+        broj: {},
+        vrsta: {},
+        vrstaId: {},
+        posudaId: {},
+        vinoId: {},
+        mostId: {},
+        grozdeId: {},
+        masuljId: {},
+        nalogVrsta: {},
+        radnje: {}
+    }
+});
+V.NalogList = Backbone.Collection.extend({
+    model: V.Nalog,
+    url: 'nalog'
+
+});
+V.Parametar = Backbone.Model.extend({
+    root: 'Parametar',
+    url: 'parametar',
+    defaults: {
+        naziv: {},
+        dugiNaziv: {},
+        jedinica: {},
+        cijena: {},
+        userId: {}
+    }
+});
+V.ParametarList = Backbone.Collection.extend({
+    model: V.Parametar,
+    url: 'parametar'
+
+});
+V.Partner = Backbone.Model.extend({
+    root: 'Partner',
+    url: 'partner',
+    defaults: {
+        naziv: {},
+        adresa: {},
+        postBroj: {},
+        mjesto: {},
+        dobavljac: {},
+        kupac: {},
+        oib: {},
+        mibpg: {},
+        userId: {}
+    }
+});
+V.PartnerList = Backbone.Collection.extend({
+    model: V.Partner,
+    url: 'partner'
+
+});
+V.Plan = Backbone.Model.extend({
+    root: 'Plan',
+    url: 'plan',
+    defaults: {
+        name: {},
+        minLitres: {},
+        maxLitres: {},
+        users: {},
+        locations: {},
+        order: {}
+
+
+    }
+});
+V.PlanList = Backbone.Collection.extend({
+    model: V.Plan,
+    url: 'plan'
+
+});
+V.PlanLicense = Backbone.Model.extend({
+    root: 'PlanLicense',
+    url: 'planlicense',
+    defaults: {
+        planId: {},
+        license: {},
+        status: {}
+    }
+});
+V.PlanLicenseList = Backbone.Collection.extend({
+    model: V.PlanLicense,
+    url: 'planlicense'
+
+});
+V.Posuda = Backbone.Model.extend({
+    root: 'Posuda',
+    url: 'posuda',
+    defaults: {
+        oznaka: {},
+        volumen: {},
+        sekcije: {},
+        stanje: {},
+        currentSekcija: {},
+        sorta: {},
+        userId: {}
+    }
+});
+V.PosudaList = Backbone.Collection.extend({
+    model: V.Posuda,
+    url: 'posuda',
+    root: 'Posuda'
+
+
+
+});
+V.PosudaSekcija = Backbone.Model.extend({
+    root: 'PosudaSekcija',
+    url: 'posudasekcija',
+    defaults: {
+        posudaId: {},
+        sekcijaId: {},
+        datum: {},
+        userId: {}
+    }
+});
+V.PosudaSekcijaList = Backbone.Collection.extend({
+    model: V.PosudaSekcija,
+    url: 'posudasekcija'
+
+});
+V.PovratStavka = Backbone.Model.extend({
+    root: 'PovratStavka',
+    url: 'povratstavka',
+    defaults: {
+        povrat: {},
+        isporuceno: {},
+        izdatnicaStavkaId: {}
+    }
+});
+V.PovratStavkaList = Backbone.Collection.extend({
+    model: V.PovratStavka,
+    url: 'povratstavka'
+
+});
+V.Povratnica = Backbone.Model.extend({
+    root: 'Povratnica',
+    url: 'povratnica',
+    defaults: {
+        datum: {},
+        partnerId: {},
+        napomena: {},
+        broj: {},
+        izdatnicaId: {},
+        userId: {}
+    }
+});
+V.PovratnicaList = Backbone.Collection.extend({
+    model: V.Povratnica,
+    url: 'povratnica'
+
+});
+V.Prerada = Backbone.Model.extend({
+    root: 'Prerada',
+    url: 'prerada',
+    defaults: {
+        datum: {},
+        primkaId: {},
+        primka: {},
+        nalozi: {},
+        broj: {},
+        vrsta: {},
+        sortaNaziv: {},
+        polozaj: {},
+        sortaId: {}
+    }
+});
+V.PreradaList = Backbone.Collection.extend({
+    model: V.Prerada,
+    url: 'prerada',
+    fromMonth: function(month, year) {
+        return V.Array.filter(this.toArray(), function(model) {
+            var datum = moment(model.get('datum'));
+            return datum.month() === month && datum.year() === year;
+        });
+    }
+
+});
+V.PreradaNalog = Backbone.Model.extend({
+    root: 'PreradaNalog',
+    url: 'preradanalog',
+    defaults: {
+        preradaId: {},
+        nalogId: {},
+        userId: {}
+    }
+});
+V.PreradaNalogList = Backbone.Collection.extend({
+    model: V.PreradaNalog,
+    url: 'preradanalog'
+
+});
+V.PrimjenaSredstvo = Backbone.Model.extend({
+    root: 'PrimjenaSredstvo',
+    url: 'primjenasredstvo',
+    defaults: {
+        naziv: {},
+        doziranje: {},
+        kolicina: {},
+        primjena: {}
+    }
+});
+V.PrimjenaSredstvoList = Backbone.Collection.extend({
+    model: V.PrimjenaSredstvo,
+    url: 'primjenasredstvo'
+
+});
+V.Primka = Backbone.Model.extend({
+    root: 'Primka',
+    url: 'primka',
+    defaults: {
+        partnerId: {},
+        partner: {},
+        datum: {},
+        brRacuna: {},
+        napomena: {},
+        broj: {},
+        stavke: {},
+        kolicina: {},
+        cijena: {},
+        iznos: {},
+        grupaId: {},
+        grupaNaziv: {},
+        jm: {},
+        userId: {}
+    }
+});
+V.PrimkaList = Backbone.Collection.extend({
+    model: V.Primka,
+    url: 'primka'
+
+});
+V.Proizvod = Backbone.Model.extend({
+    root: 'Proizvod',
+    url: 'proizvod',
+    defaults: {
+        naziv: {},
+        napomena: {},
+        userId: {}
+    }
+});
+V.ProizvodList = Backbone.Collection.extend({
+    model: V.Proizvod,
+    url: 'proizvod'
+
+});
+V.Proizvodac = Backbone.Model.extend({
+    root: 'Proizvodac',
+    url: 'proizvodac',
+    defaults: {
+        naziv: {},
+        userId: {}
+    }
+});
+V.ProizvodacList = Backbone.Collection.extend({
+    model: V.Proizvodac,
+    url: 'proizvodac'
+
+});
+V.Radnja = Backbone.Model.extend({
+    root: 'Radnja',
+    url: 'radnja',
+    defaults: {
+        tip: {},
+        posuda1: {},
+        posuda2: {},
+        artikl1: {},
+        artikl2: {},
+        kolicina: {},
+        rb: {},
+        napomena: {},
+        jm: {},
+        sredstvoId: {},
+        parametarId: {},
+        proizvodId: {},
+        nalogId: {},
+        userId: {}
+    }
+});
+V.RadnjaList = Backbone.Collection.extend({
+    model: V.Radnja,
+    url: 'radnja'
+
+});
+V.Sekcija = Backbone.Model.extend({
+    root: 'Sekcija',
+    url: 'sekcija',
+    defaults: {
+        naziv: {},
+        defaultProp: {},
+        lokacijaId: {},
+        userId: {}
+
+    }
+});
+V.SekcijaList = Backbone.Collection.extend({
+    model: V.Sekcija,
+    url: 'sekcija'
+
+});
+V.Sorta = Backbone.Model.extend({
+    root: 'Sorta',
+    url: 'sorta',
+    defaults: {
+        naziv: {},
+        vrsta: {},
+        active: {},
+        userId: {}
+    }
+});
+V.SortaList = Backbone.Collection.extend({
+    model: V.Sorta,
+    url: 'sorta'
+});
+V.SortaVinograd = Backbone.Model.extend({
+    root: 'SortaVinograd',
+    url: 'sortavinograd',
+    defaults: {
+        vinogradId: {},
+        sortaId: {},
+        datum: {},
+        userId: {},
+        sorta: {}
+    }
+});
+V.SortaVinogradList = Backbone.Collection.extend({
+    model: V.SortaVinograd,
+    url: 'sortavinograd'
+
+});
+V.Sredstvo = Backbone.Model.extend({
+    root: 'Sredstvo',
+    url: 'sredstvo',
+    defaults: {
+        doziranje: {},
+        artiklId: {},
+        artikl: {},
+        doziranjeJm: {},
+        userId: {}
+    }
+});
+V.SredstvoList = Backbone.Collection.extend({
+    model: V.Sredstvo,
+    url: 'sredstvo'
+
+});
+V.Stanje = Backbone.Model.extend({
+    root: 'Stanje',
+    url: 'stanje',
+    defaults: {
+        posudaId: {},
+        vrsta: {},
+        vrstaId: {},
+        kolicina: {},
+        sortaId: {},
+        nalogId: {},
+        napomena: {},
+        vinoId: {},
+        mostId: {},
+        grozdeId: {},
+        masuljId: {},
+        datum: {},
+        stanje: {},
+        userId: {}
+    }
+});
+V.StanjeList = Backbone.Collection.extend({
+    model: V.Stanje,
+    url: 'stanje'
+
+});
+V.Stavka = Backbone.Model.extend({
+    root: 'Stavka',
+    url: 'stavka',
+    defaults: {
+        masterId: {},
+        grupaId: {},
+        kolicina: {},
+        cijena: {},
+        iznos: {},
+        artikl: {},
+        artiklId: {},
+        artiklStanjeId: {},
+        jmStavka: {},
+        userId: {}
+    }
+});
+V.StavkaList = Backbone.Collection.extend({
+    model: V.Stavka,
+    url: 'stavka'
+
+});
+V.Stopa = Backbone.Model.extend({
+    root: 'Stopa',
+    url: 'stopa',
+    defaults: {
+        naziv: {},
+        stopa: {},
+        userId: {}
+
+    }
+});
+V.StopaList = Backbone.Collection.extend({
+    model: V.Stopa,
+    url: 'stopa'
+
+});
+V.Trosak = Backbone.Model.extend({
+    root: 'Trosak',
+    url: 'trosak',
+    defaults: {
+        vrsta: {},
+        vrstaId: {},
+        kolicina: {},
+        iznos: {},
+        vinoId: {},
+        mostId: {},
+        masuljId: {},
+        datum: {},
+        napomena: {},
+        userId: {}
+    }
+});
+V.TrosakList = Backbone.Collection.extend({
+    model: V.Trosak,
+    url: 'trosak'
+
+});
+V.Uloga = Backbone.Model.extend({
+    root: 'Uloga',
+    url: 'uloga',
+    defaults: {
+        naziv: {},
+        dozvole: {},
+        userId: {}
+    }
+});
+V.UlogaList = Backbone.Collection.extend({
+    model: V.Uloga,
+    url: 'uloga'
+
+});
+V.UlogaDozvola = Backbone.Model.extend({
+    root: 'UlogaDozvola',
+    url: 'ulogadozvola',
+    defaults: {
+        roleId: {},
+        permissionId: {},
+        userId: {}
+    }
+});
+V.UlogaDozvolaList = Backbone.Collection.extend({
+    model: V.UlogaDozvola,
+    url: 'ulogadozvola'
+
+});
+V.User = Backbone.Model.extend({
+    root: 'User',
+    url: 'user',
+    defaults: {
+        userId: {},
+        wineryName: {},
+        taxNr: {},
+        address: {},
+        postalCode: {},
+        city: {},
+        country: {},
+        active: {}
+    }
+});
+V.UserList = Backbone.Collection.extend({
+    model: V.User,
+    url: 'user'
+
+});
+V.UserPlan = Backbone.Model.extend({
+    root: 'UserPlan',
+    url: 'userplan',
+    defaults: {
+        userId: {},
+        planPriceId: {},
+        fromDate: {},
+        planLicenseId: {}
+    }
+});
+V.UserPlanList = Backbone.Collection.extend({
+    model: V.UserPlan,
+    url: 'userplan'
+
+});
+V.Vino = Backbone.Model.extend({
+    root: 'Vino',
+    url: 'vino',
+    defaults: {
+        naziv: {},
+        oznaka: {},
+        godina: {},
+        sortaId: {},
+        vrsta: {},
+        sortaNaziv: {},
+        mostId: {},
+        preradaId: {},
+        datum: {},
+        combo: {},
+        combos: {},
+        napomena: {},
+        userId: {}
+    }
+});
+V.VinoList = Backbone.Collection.extend({
+    model: V.Vino,
+    url: 'vino'
+
+});
+V.VinoCombo = Backbone.Model.extend({
+    root: 'VinoCombo',
+    url: 'vinocombo',
+    defaults: {
+        vinoId: {},
+        parentId: {},
+        udio: {},
+        sortaNaziv: {},
+        userId: {}
+    }
+});
+V.VinoComboList = Backbone.Collection.extend({
+    model: V.VinoCombo,
+    url: 'vinocombo'
+
+});
+V.Vinograd = Backbone.Model.extend({
+    root: 'Vinograd',
+    url: 'vinograd',
+    defaults: {
+        oznaka: {},
+        polozaj: {},
+        povrsina: {},
+        sorte: {},
+        arkod: {},
+        partnerId: {},
+        partner: {},
+        jedinica: {},
+        userId: {}
+    }
+});
+V.VinogradList = Backbone.Collection.extend({
+    model: V.Vinograd,
+    url: 'vinograd'
+
+
+});
+V.Vrsta = Backbone.Model.extend({
+    root: 'Vrsta',
+    url: 'vrsta',
+    defaults: {
+        vrsta: {},
+        vrstaId: {},
+        sortaId: {}
+
+    }
+});
+V.VrstaList = Backbone.Collection.extend({
+    model: V.Vrsta,
+    url: 'vrsta'
+
+});

@@ -192,7 +192,7 @@ module.exports = function(grunt) {
                     src: [
                         '<%= yeoman.dist %>/scripts/{,*/}*.js',
                         '<%= yeoman.dist %>/styles/{,*/}*.css',
-                        '<%= yeoman.dist %>/images/{,*/}*.{gif,jpeg,jpg,png,webp}',
+//                        '<%= yeoman.dist %>/images/{,*/}*.{gif,jpeg,jpg,png,webp}',
                         '<%= yeoman.dist %>/styles/fonts/{,*/}*.*'
                     ]
                 }
@@ -239,12 +239,12 @@ module.exports = function(grunt) {
         htmlmin: {
             dist: {
                 options: {
-                    collapseBooleanAttributes: true,
+                    collapseBooleanAttributes: false,
                     collapseWhitespace: true,
-                    removeAttributeQuotes: true,
+                    removeAttributeQuotes: false,
                     removeCommentsFromCDATA: true,
-                    removeEmptyAttributes: true,
-                    removeOptionalTags: true,
+                    removeEmptyAttributes: false,
+                    removeOptionalTags: false,
                     removeRedundantAttributes: true,
                     useShortDoctype: true
                 },

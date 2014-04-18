@@ -27,6 +27,7 @@ V.Lang.en = {
     URL_primka: "goods-receipt",
     URL_partneri: "partners",
     URL_print: "print",
+    URL_logout: "logout",
 
     //Reports
     LBL_pdf: "Download PDF",
@@ -39,6 +40,7 @@ V.Lang.en = {
     VRSTA_G: 'Grape',
 
     LBL_loading: ' Loading...',
+    LBL_logout: 'Logout',
 
     LBL_tankovi: "Tanks\nBarrels",
     LBL_partneri: "Partners",

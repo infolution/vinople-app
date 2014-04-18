@@ -29,7 +29,9 @@ V.VinopleSchema = {
         ]},
         {"storename": "Izdatnica"},
         {"storename": "Kakvoca"},
-        {"storename": "LoginUser"},
+        {"storename": "LoginUser", "keys": [
+            {"keyname": "username", "unique": true}
+        ]},
         {"storename": "Lokacija"},
         {"storename": "Lot"},
         {"storename": "LotRepromaterijal"},
@@ -115,7 +117,7 @@ var database = {
             }
         },
         {
-            version: 16,
+            version: 17,
             migrate: function (transaction, next) {
                 var store = undefined;
                 var objectstores = V.VinopleSchema.objectstores;
@@ -497,6 +499,15 @@ V.LoginUser = Backbone.Model.extend({
         email: null,
         username: null,
         active: null
+    },
+    getModel: function () {
+        var deferred = Q.defer();
+        this.fetch({success: function (model) {
+            deferred.resolve(model);
+        }, error: function (model, error) {
+            deferred.reject(error);
+        }});
+        return deferred.promise;
     }
 });
 V.LoginUserList = Backbone.Collection.extend({

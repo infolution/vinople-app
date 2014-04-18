@@ -26,6 +26,7 @@ V.Lang.hr = {
     URL_primka: "primka",
     URL_partneri: "partneri",
     URL_print: "print",
+    URL_logout: "logout",
 
     //Reports
     LBL_pdf: "Preuzmi PDF",
@@ -40,6 +41,7 @@ V.Lang.hr = {
     VRSTA_G: 'Grožđe',
 
     LBL_loading: ' Učitavanje...',
+    LBL_logout: 'Odjava',
 
 
     LBL_tankovi: "Tankovi\nBa\u010dve",

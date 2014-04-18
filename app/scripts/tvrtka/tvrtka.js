@@ -90,7 +90,7 @@ V.Ljudi = Marionette.ItemView.extend({
             columns: [
                 {name: 'fullName', label: "Full name", cell: 'string'},
                 {name: 'email', label: "E-mail", cell: 'string'},
-                {name: 'password', label: "Pssword", cell: 'string'}
+                {name: 'password', label: "Password", cell: 'string'}
             ],
             collection: this.ljudiList
         });

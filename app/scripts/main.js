@@ -10,6 +10,7 @@ if (typeof lang !== 'undefined' && lang !== '') {
 }
 var vinarija = V.Lang['LBL_vinarija'];
 
+
 Handlebars.registerHelper("i18n", function (key) {
     var result = window.V.Lang[key];
     return new Handlebars.SafeString(result);
@@ -199,6 +200,10 @@ V.RouterController = {
         var view = new V.Katalog();
         V.App.container.show(view);
     },
+    logout: function () {
+        var view = new V.Logout();
+        V.App.container.show(view);
+    },
 
 
     //Reports
@@ -263,6 +268,7 @@ V.App.addInitializer(function () {
 
     //Postavke routes
     router.appRoute(V.Lang['URL_postavke'] + '/', 'postavke');
+    router.appRoute(V.Lang['URL_logout'] + '/', 'logout');
 
     //Print routes
     router.appRoute(V.Lang['URL_print'] + '/' + V.Lang['URL_ulaz_prema_partneru'] + '/', 'ulazPremaPartneru');
@@ -272,7 +278,7 @@ V.App.addInitializer(function () {
 //Update db;
     var schema = V.VinopleSchema;
     var db = new V.IndexedDB();
-    db.update(schema, function() {
+    db.update(schema, function () {
         console.log("IndexedDB schema updated to version: " + schema.version);
     });
 //    window.socket.onopen = function () {
@@ -334,8 +340,10 @@ function syncServer() {
 
 }
 
+V.App.apiurl = "http://localhost:3000";
+
 function connectWebsocket() {
-    var host = 'ws://socket.vinople.local:8000';
+    var host = 'ws://localhost:3000/socket/';
     var socket = window.socket = new WebSocket(host);
     return socket;
 }
@@ -361,29 +369,60 @@ V.App.on('initialize:after', function () {
     var topBar = new V.TopBar();
 //    var vinarijaView = new V.Vinarija();
     V.App.header.show(topBar);
-    var socket = connectSocketIO();
-    socket.on('connect', function () {
-        console.log('socket open');
-        topBar.serverOnline();
-        socket.emit('hello', {hello: 'Hello world'});
+    //REST version
+    syncServer();
 
-        syncServer();
-    });
-    socket.on('disconnect', function () {
-        console.log('socket close');
-        topBar.serverOffline();
-    });
-    socket.on('vinople.db',function(data) {
-        console.log('Sync: received response for resource: ' + data.resource);
-        var options = {};
-        options.success = function (json) {
-//            console.log('Update success: ' + json.id);
-        };
-        options.error = function (e) {
-            console.log(e);
-        };
-        window.VinopleSync.handleMsg(data, options);
-    });
+    //websocket version
+//    var socket = connectWebsocket();
+//    socket.onopen =  function (e) {
+//        console.log('socket open');
+//        topBar.serverOnline();
+//        socket.emit('hello', {hello: 'Hello world'});
+//
+////        syncServer();
+//    };
+//    socket.onclose = function (e) {
+//        console.log('socket close');
+//        topBar.serverOffline();
+//    };
+//    socket.onmessage = function (e) {
+//        console.log('Sync: received response for resource: ' + data.resource);
+//        var options = {};
+//        options.success = function (json) {
+////            console.log('Update success: ' + json.id);
+//        };
+//        options.error = function (e) {
+//            console.log(e);
+//        };
+////        window.VinopleSync.handleMsg(data, options);
+//    };
+
+    //Socket.io version
+//    var socket = connectSocketIO();
+//    socket.on('connect', function () {
+//        console.log('socket open');
+//        topBar.serverOnline();
+//        socket.emit('hello', {hello: 'Hello world'});
+//
+//        syncServer();
+//    });
+//    socket.on('disconnect', function () {
+//        console.log('socket close');
+//        topBar.serverOffline();
+//    });
+//    socket.on('vinople.db', function (data) {
+//        console.log('Sync: received response for resource: ' + data.resource);
+//        var options = {};
+//        options.success = function (json) {
+////            console.log('Update success: ' + json.id);
+//        };
+//        options.error = function (e) {
+//            console.log(e);
+//        };
+//        window.VinopleSync.handleMsg(data, options);
+//    });
+
+
 //    if (typeof window.socket !== 'undefined') {
 //        if (window.socket.readyState === 0) {
 //            topBar.serverOffline();
@@ -397,8 +436,18 @@ V.App.on('initialize:after', function () {
 
 
 });
-V.App.start();
-Foundation.init();
 
-//var schema = V.VinopleSchema;
-//indexedDB.deleteDatabase(schema.datastore);
+(function (V) {
+    //Check for login
+    var apikey = window.sessionStorage.apikey;
+    if (typeof apikey != 'undefined') {
+        var loginView = new V.Login();
+
+
+        $('body').html( loginView.render().el);
+    } else {
+        V.App.start();
+        Foundation.init();
+    }
+})(V);
+

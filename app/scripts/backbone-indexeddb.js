@@ -654,41 +654,69 @@
 
     VinopleSync.prototype = {
         syncServer: function (models, options) {
-            if (typeof window.socket !== 'undefined' && window.socket.socket.connected) {
-                console.log('Sync started... Sending request...');
-                var self = this;
+//            if (typeof window.socket !== 'undefined' && window.socket.socket.connected) {
+            console.log('Sync started... Sending request...');
+            var self = this;
 
-                var request = {};
+            var request = {};
 
-                request.action = 'sync';
+            request.action = 'sync';
 //                request.resource = object.url;
-                request.resources = [];
-                request.uid = uuid.v4();
-                request.clientid = window.localStorage.clientid || 'c5fb8dec-ea9f-43b1-a31f-fa4c46fe1a94';
+            request.resources = [];
+            request.uid = uuid.v4();
+            request.clientid = window.localStorage.clientid || 'c5fb8dec-ea9f-43b1-a31f-fa4c46fe1a94';
 //                this.callbacks[request.uid] = object.storeName;
-                var totalModels = models.length;
+            var totalModels = models.length;
 
-                var db = this.Databases[this.schema.id];
-                async.eachSeries(models, function (model, callback) {
-                        var resource = {};
+            var db = this.Databases[this.schema.id];
+            var promises = [];
+            for (var i = 0, j = models.length; i < j; ++i) {
+                var model = models[i];
+                var resource = {};
+                resource.resource = model.url;
+                resource.storeName = model.storeName;
+                request.resources.push(resource);
+//                    promises.push(self.findData(resource, db))
 
-                        resource.resource = model.url;
-                        resource.storeName = model.storeName;
-
-                        self.findUpdated(resource, db)
-                            .then(self.findLastmodified)
-                            .then(function(resource) {
-                                request.resources.push(resource);
-                                callback(null);
-                            })
-                            .catch(function (error) {
-                                console.log(error);
-                            })
-
-                    },
-                    function (err, result) {
-                        self.sendRequest(request);
-                    });
+//                    self.findUpdated(resource, db)
+//                        .then(function() {
+//                            var promise = self.findLastmodified;
+//                            promises.push(promise);
+//                            return promise;
+//                        })
+//                        .then(function(resource) {
+//                            var deferred = Q.defer();
+//                            request.resources.push(resource);
+//                            callback(null);
+//
+//                        })
+//                        .catch(function (error) {
+//                            console.log(error);
+//                        })
+            }
+//            Q.all(promises).then(function() {
+            self.sendRequest(request);
+//            });
+//                async.eachSeries(models, function (model, callback) {
+//                        var resource = {};
+//
+//                        resource.resource = model.url;
+//                        resource.storeName = model.storeName;
+//
+//                        self.findUpdated(resource, db)
+//                            .then(self.findLastmodified)
+//                            .then(function(resource) {
+//                                request.resources.push(resource);
+//                                callback(null);
+//                            })
+//                            .catch(function (error) {
+//                                console.log(error);
+//                            })
+//
+//                    },
+//                    function (err, result) {
+//                        self.sendRequest(request);
+//                    });
 //                for (var i = 0, j = models.length; i < j; ++i) {
 //                    var model = models[i];
 //                    var resource = {};
@@ -706,10 +734,43 @@
 //                }
 
 
-            }
+//            }
         },
         sendRequest: function (request) {
-            window.socket.emit('vinople.db', request);
+            var self = this;
+//            window.socket.emit('vinople.db', request);
+            $.ajax({
+                    type: "POST",
+                    url: V.App.apiurl + '/sync/',
+//                    url: "http://localhost:9000/sync/",
+                    data: JSON.stringify(request),
+//                    contentType: "application/json",
+                    success: function (res) {
+                        console.log('Sync finished. ');
+                        var resources = JSON.parse(res);
+                        if (resources.success === true) {
+                            console.log('Parsing successful')
+                            self.handleMsg(resources, null)
+                        }
+//                        window.localStorage.clientid = res.clientid;
+//                        window.sessionStorage.session = res.session;
+
+                    },
+                    error: function (res, err) {
+                        console.log('Error during sync with server. ' + err);
+                    },
+//                    dataType: "jsonp",
+//                    jsonp: "callback"
+
+                }
+            );
+        },
+        findData: function (request, resource, db) {
+            var deferred = Q.defer();
+//            var funcs = [this.findUpdated, this.findLastmodified), function(resource) {
+//                request.resources.push(resource);
+//            }];
+            return deferred.promise;
         },
         findLastmodified: function (result) {
             var resource = result.resource,
@@ -737,7 +798,7 @@
                 resource.lastmodified = lastmodified;
                 deferred.resolve(resource);
             };
-            options.error = function(error) {
+            options.error = function (error) {
                 deferred.reject(error);
             };
             db.execute(['read', collection, options]);
@@ -755,7 +816,7 @@
                 resource.data = updatedData;
                 deferred.resolve({resource: resource, db: db});
             };
-            options.error = function(error) {
+            options.error = function (error) {
                 deferred.reject(error);
             };
             db.execute(['read', collection, options]);
@@ -765,34 +826,18 @@
             if (typeof msg.models !== 'undefined') {
 
                 if (msg.uid && msg.result === 'success') {
+
+                    var options = {};
+                    options.success = function (json) {
+//                        console.log('Update success: ' + json.id);
+                    };
+                    options.error = function (e) {
+                        console.log(e);
+                    };
 //                if (msg.resource === model.url) {
 //            this.reset();
                     var action = msg.action;
                     switch (action) {
-//                        case 'read':
-////                            model.add(output);
-////                            this._create(this.callbacks[msg.uid], output);    //Fetches model root
-////                            options.success(output);
-//                            var array = [];
-//                            if (Array.isArray(output)) {
-//                                array = output;
-//                            } else {
-//                                array.push(output);
-//                            }
-//                            for (var i = 0, j = array.length; i < j; ++i) {
-//
-//                                var newModel = new Backbone.Model(array[i]);
-//                                newModel.storeName = this.callbacks[msg.uid];
-//                                this.Databases[this.schema.id].execute(['update', newModel, options]);
-//                            }
-//
-//                            break;
-//                        case 'create':
-//
-//                            break;
-//                        case 'update':
-//
-//                            break;
                         case 'sync':
                             for (var x = 0, y = msg.models.length; x < y; ++x) {
                                 var model = msg.models[x];
@@ -805,7 +850,7 @@
                                         array.push(output);
                                     }
                                     for (var i = 0, j = array.length; i < j; ++i) {
-                                        var data = array[i].data;
+                                        var data = array[i];
                                         if (_.isString(data)) {
                                             data = JSON.parse(data);
                                         }
